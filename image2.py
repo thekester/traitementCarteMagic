@@ -35,18 +35,26 @@ from selenium import webdriver
 """https://stackoverflow.com/questions/11783875/importerror-no-module-named-bs4-beautifulsoup"""
 from bs4 import BeautifulSoup
 
-webpage = r"https://www.magic-ville.com/fr/" # edit me
+#webpage = r"https://www.magic-ville.com/fr/" # edit me
+webpage = r"https://gatherer.wizards.com/Pages/Default.aspx"
 searchterm = "Cavalière meurtrière" # edit me
 
 driver = webdriver.Firefox()
 driver.get(webpage)
-
+"""
 sbox = driver.find_element_by_class_name("search_input")
 sbox.send_keys(searchterm)
 
 #submit = driver.find_element_by_tag_name(input)
 #submit = driver.find_element_by_link_text('https://www.magic-ville.com/fr/graph/head/go.png')
 submit = driver.find_element_by_xpath("//input[@type='image']")
+submit.click()
+"""
+
+sbox = driver.find_element_by_id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent_CardSearchBox")
+sbox.send_keys(searchterm)
+
+submit = driver.find_element_by_id("ctl00_ctl00_MainContent_Content_SearchControls_searchSubmitButton")
 submit.click()
 
 """Il ne reste plus qu'à prendre l'image et la mettre dans le dossier images"""
