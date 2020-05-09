@@ -49,7 +49,7 @@ sbox.send_keys(searchterm)
 submit = driver.find_element_by_xpath("//input[@type='image']")
 submit.click()
 
-"""Il ne reste plus qu'à prendre l'image et la mettre dans le dossier images"
+"""Il ne reste plus qu'à prendre l'image et la mettre dans le dossier images"""
 
 
 
