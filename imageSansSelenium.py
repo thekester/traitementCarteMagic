@@ -5,7 +5,7 @@
 # 5 janvier 2016
 #
 
-
+#https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[Cavali%c3%a8re]+[meurtri%c3%a8re]
 
 """ https://github.com/mozilla/geckodriver/releases """
 """ https://pypi.org/project/selenium/ """
@@ -27,37 +27,85 @@ from fileinput import filename
 from PIL import Image
 import csv
 import requests
-import urllib.parse as urlParse
-
-""" https://stackoverflow.com/questions/31147660/importerror-no-module-named-selenium """
-from selenium import webdriver
+#https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+from io import BytesIO 
+#import urllib.parse as urlParse
+#import urllib.request
+#import image
+"""https://stackoverflow.com/questions/11914472/stringio-in-python3"""
+from io import StringIO ## for Python 3
 
 """https://stackoverflow.com/questions/11783875/importerror-no-module-named-bs4-beautifulsoup"""
 from bs4 import BeautifulSoup
 
-#webpage = r"https://www.magic-ville.com/fr/" # edit me
-webpage = r"https://gatherer.wizards.com/Pages/Default.aspx"
-searchterm = "Cavalière meurtrière" # edit me
+from io import BytesIO
+from PIL import Image, ImageFile
+#import numpy
+#from rawkit import raw
 
-driver = webdriver.Firefox()
-driver.get(webpage)
-"""
-sbox = driver.find_element_by_class_name("search_input")
-sbox.send_keys(searchterm)
+def GetMagicCardImage(searchterm):
 
-#submit = driver.find_element_by_tag_name(input)
-#submit = driver.find_element_by_link_text('https://www.magic-ville.com/fr/graph/head/go.png')
-submit = driver.find_element_by_xpath("//input[@type='image']")
-submit.click()
-"""
 
-sbox = driver.find_element_by_id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent_CardSearchBox")
-sbox.send_keys(searchterm)
+    #https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[Cavali%c3%a8re]+[meurtri%c3%a8re]
+    parseWords=searchterm.split(' ')
+    stringATransforme = "["
+    for i in range(len(parseWords)):
+        #stringATransforme += requests.utils.quote(parseWords[i]) 
+        stringATransforme += parseWords[i] 
+        if (i < len(parseWords)-1):
+            stringATransforme += ']+['
+        else:
+            stringATransforme += ']'
+    #stringATransforme = searchterm
+    #stringATransforme = stringATransforme.replace(' ',']+[')
+    #stringATransforme="["+stringATransforme+"]"
+    #link = "https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+" + requests.utils.quote(stringATransforme)
+    link = "https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+" + stringATransforme
+    print("Le lien est :",link)
+    
+    #requete = requests.get(link)
+    #https://www.developpez.net/forums/d1926656/autres-langages/python/reseau-web/erreur-requete-site-https-certificat/
+    requete = requests.get(link,verify=True , params=link, auth=('user', 'pass'))
+    #https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+    
+    #https://stackoverflow.com/questions/27981545/suppress-insecurerequestwarning-unverified-https-request-is-being-made-in-pytho
+    
+    """
+    Piste : Changer le user agent
+    
+    """
+    
+    page = requete.content
+    soup = BeautifulSoup(page, 'html.parser')
+    linkImageSrc = None
+    for tag in soup.find_all("img"):
+        print(tag['src'])
+        if("Handlers/Image.ashx?multiverseid=" in tag['src'] ):
+            linkImageSrc = tag['src']
+            break
+    if (linkImageSrc == None):
+        print ("Image source correspondante à la recherche non trouvée")
+        sys.exit (-2)
+        
+    linkImage = "https://gatherer.wizards.com/"+ linkImageSrc
+    linkImage = linkImage.replace('../../', '')
+    #print("Le lien de l'image est :",linkImage)
 
-submit = driver.find_element_by_id("ctl00_ctl00_MainContent_Content_SearchControls_searchSubmitButton")
-submit.click()
+    imageResponse=requests.get(linkImage, stream=True)
+    if imageResponse.status_code == 200:
+        image=Image.open(io.BytesIO(imageResponse.content))
+        
+    else:
+        print ("Erreur réseau pendant la récupération de l'image")
 
+    return image
+
+GetMagicCardImage("Cavalière meurtrière").show()
+imageLegendaire = GetMagicCardImage("Cavalière meurtrière")
 """Il ne reste plus qu'à prendre l'image et la mettre dans le dossier images"""
+
+imageLegendaire = imageLegendaire.save("images/resultatFonction.png") 
+
 
 
 

@@ -28,6 +28,10 @@ from PIL import Image
 import csv
 import requests
 import urllib.parse as urlParse
+import urllib.request
+import image
+"""https://stackoverflow.com/questions/11914472/stringio-in-python3"""
+from io import StringIO ## for Python 3
 
 """ https://stackoverflow.com/questions/31147660/importerror-no-module-named-selenium """
 from selenium import webdriver
@@ -35,39 +39,65 @@ from selenium import webdriver
 """https://stackoverflow.com/questions/11783875/importerror-no-module-named-bs4-beautifulsoup"""
 from bs4 import BeautifulSoup
 
-webpage = r"https://www.magic-ville.com/fr/" # edit me
-searchterm = "Cavalière meurtrière" # edit me
+from io import BytesIO
+from PIL import Image, ImageFile
+#import numpy
+#from rawkit import raw
 
-driver = webdriver.Firefox()
-driver.get(webpage)
+def GetMagicCardImage(searchterm):
 
-sbox = driver.find_element_by_class_name("search_input")
-sbox.send_keys(searchterm)
+    webpage = r"https://gatherer.wizards.com/Pages/Default.aspx"
 
-#submit = driver.find_element_by_tag_name(input)
-#submit = driver.find_element_by_link_text('https://www.magic-ville.com/fr/graph/head/go.png')
-submit = driver.find_element_by_xpath("//input[@type='image']")
-submit.click()
+    driver = webdriver.Firefox()
+    driver.get(webpage)
 
-"""
 
-requete = requests.get("https://www.magic-ville.com/fr/")
-page = requete.content
-soup = BeautifulSoup(page, 'html.parser')
-print(soup.prettify())
+    sbox = driver.find_element_by_id("ctl00_ctl00_MainContent_Content_SearchControls_CardSearchBoxParent_CardSearchBox")
+    sbox.send_keys(searchterm)
 
-input = soup.find("input", {"class": "search_input"} , {"name": "recherche_titre" } )
-print(input.string)
-#n = BeautifulSoup('Cavalière meurtrière' % input.string)
+    submit = driver.find_element_by_id("ctl00_ctl00_MainContent_Content_SearchControls_searchSubmitButton")
+    submit.click()
 
-n = BeautifulSoup('Cavalière meurtrière')
-input.replace_with(n.body.contents[0])
-#input.string.replace_with("Cavalière meurtrière")
+    elems = driver.find_elements_by_xpath("//a[@href]")
+    for elem in elems:
+        print (elem.get_attribute("href"))
+        if("https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" in elem.get_attribute("href")):
+            link=elem.get_attribute("href")
+            break
+        else:
+            print("Le lien ne contient pas ce qu'on veut")
+    print("Le lien est :",link)
+    requete = requests.get(link)
+    page = requete.content
+    soup = BeautifulSoup(page, 'html.parser')        
+    for tag in soup.find_all("img"):
+        print(tag['src'])
+        if("Handlers/Image.ashx?multiverseid=" in tag['src'] ):
+            linkImageSrc = tag['src']
 
-submit = driver.find_element_by_class_name("sbtSearch")
-submit.click()
+    linkImage = "https://gatherer.wizards.com/"+ linkImageSrc
+    linkImage.replace('../../', '')
+    #print("Le lien de l'image est :",linkImage)
 
-"""
+    imageResponse=requests.get(linkImage, stream=True)
+    if imageResponse.status_code == 200:
+        image=Image.open(io.BytesIO(imageResponse.content))
+        
+    else:
+        print ("Erreur réseau pendant la récupération de l'image")
+
+    return image
+
+GetMagicCardImage("Cavalière meurtrière").show()
+imageLegendaire = GetMagicCardImage("Cavalière meurtrière")
+"""Il ne reste plus qu'à prendre l'image et la mettre dans le dossier images"""
+
+imageLegendaire = imageLegendaire.save("images/resultatFonction.png") 
+
+
+
+
+""" Le code qui transforme les images une fois mis dans le dossier images pour les mettre dans images.png """
 
 
 #http://code.activestate.com/recipes/412982-use-pil-to-make-a-contact-sheet-montage-of-images/
@@ -151,85 +181,3 @@ inew = make_contact_sheet(files,(ncols,nrows),photo,margins,padding)
 inew.save('images.png')
 os.system('display images.png')
 os.system('open images.png')
-
-
-#https://stackoverflow.com/questions/20894969/python-reading-and-writing-to-tty
-"""
-tty = io.TextIOWrapper(
-        io.FileIO(
-            os.open(
-                "image.py",
-                os.O_NOCTTY | os.O_RDWR),
-            "r+"))
-
-for line in iter(tty.readline, None):
-    print(line.strip())
-"""
-
-
-"""
-root = Tk()
-root.geometry("550x300+300+150")
-root.resizable(width=True, height=True)
-
-def openfn():
-    filename = filedialog.askopenfilename(title='open')
-    return filename
-def open_img():
-    x = openfn()
-    img = Image.open(x)
-    img = img.resize((250, 250),Image.ANTIALIAS)
-    img = Image.PhotoImage(img)
-    panel = Label(root, image=img)
-    panel.image = img
-    panel.pack()
-
-btn = Button(root, text='open image', command=open_img).pack()
-
-root.mainloop()
-"""
-
-
-#size = 1482 , 2062
-
-"""
-
-size = 741, 1031 #Les cartes font 741*1031 pixels
-
-for infile in glob.glob("images/*.jpg"):
-    file, ext = os.path.splitext(infile)
-    im = Image.open(infile)
-    im.thumbnail(size)
-    im.save(file + ".thumbnail", "JPEG")
-    im.save(file + ".thumbnail", "png")
-    im.show()
-    
-    """
-
-"""folder_path = "/images"
-
-for path, dirs, files in os.walk(folder_path):
-    for filename in files:
-        print(filename)"""
-"""
-# ouverture du fichier image
-ImageFile = 'images/cava.jpg'
-Image.open(ImageFile)
-try:
-   img = Image.open(ImageFile)
-   img = img.thumbmail(741,1031)
-   img.save('images/test.png')
-except:
-    print ('Erreur sur ouverture du fichier ' + ImageFile)
-    sys.exit(1)
-
-# affichage des caractéristiques de l'image
-print (img.format,img.size, img.mode)
-
-
-
-# affichage de l'image
-img.show()
-# fermeture du fichier image
-img.close()
-"""
