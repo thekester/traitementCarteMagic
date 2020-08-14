@@ -49,8 +49,8 @@ if (rep==1):
 
 # make a request
 
-print(os.listdir())
-os.chdir("traitementCarteMagic")
+#print(os.listdir())
+os.chdir("traitementCarteMagic/images")
 
 
 def creerDoc():
