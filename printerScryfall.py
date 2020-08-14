@@ -1,33 +1,52 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-.
 
-
-import scrython
-import time
-import urllib.request
 import os
+import time
+import scrython
 import sys
 import tkinter as tk
+import urllib.request
 from tkinter import Tk
+from tkinter import ttk
 from tkinter import Entry
 from tkinter import Button
-#from tkinter import *    ## notice lowercase 't' in tkinter here
-from tkinter.filedialog import askopenfilename
-from tkinter.messagebox import showerror
-from tkinter import ttk
+from tkinter import Label
+from tkinter import Toplevel
 
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import askyesno
+
+
+"""
+rep=tk.messagebox.askyesno(title="Proxy", message="Avez vous un proxy?")
+
+if (rep==1):
+    fen2 = Tk()
+    fen2.title("Proxy")
+    entree2 = Entry(fen2)#demande la valeur
+    ok = Button(fen2, text = "ok", command = fen2.destroy)
+    ok.pack()
+    entree2.pack() # integration du widget a la fenetre principale
+    label=Label(fen2,text="Ex:http://192.168.0.3:3128")
+    label.pack()
+    fen2.mainloop()
+    #create the object, assign it to a variable
+    chaineProxy = entree2.get()
+    #proxy = urllib.request.ProxyHandler({'http': '192.168.0.3:3128'})
+    proxy = urllib.request.ProxyHandler({chaineProxy})
+    # construct a new opener using your proxy settings
+    opener = urllib.request.build_opener(proxy)
+    # install the openen on the module-level
+    urllib.request.install_opener(opener)
+"""
 
 
 
 #Le code d'avant doit s'éxécuter sans proxy
 #Le code d 'après s'éxécute avec un proxy si vous en avez un et normalement sinon
 
-#create the object, assign it to a variable
-proxy = urllib.request.ProxyHandler({'http': '192.168.0.3:3128'})
-# construct a new opener using your proxy settings
-opener = urllib.request.build_opener(proxy)
-# install the openen on the module-level
-urllib.request.install_opener(opener)
+
 # make a request
 
 print(os.listdir())
@@ -74,6 +93,25 @@ def saisie():
         listeCarteAvecNbExemplaires.append(imageSouhait)
     return imageSouhait #recupére la valeur saisie
 
+def faireApparaitreProxy():
+    top=Toplevel(fen1)
+    label=Label(top,text="Ex:192.168.0.3:3128")
+    label.pack()
+    entree2 = Entry(top)#demande la valeur
+    entree2.pack() # integration du widget a la fenetre principale
+    ok = Button(top, text = "ok", command = top.destroy)
+    ok.pack()
+    #create the object, assign it to a variable
+    chaineProxy = entree2.get()
+    #proxy = urllib.request.ProxyHandler({'http': '192.168.0.3:3128'})
+    proxy = urllib.request.ProxyHandler({'http': chaineProxy})
+    # construct a new opener using your proxy settings
+    opener = urllib.request.build_opener(proxy)
+    # install the openen on the module-level
+    urllib.request.install_opener(opener)
+    
+
+
 fen1 = Tk()
 fen1.title("Magic pour les non programmeurs")
 fen1.geometry("500x250")
@@ -99,6 +137,9 @@ valider.pack()
 
 quitter = Button(fen1, text = "quitter", command = fen1.destroy)
 quitter.pack()
+
+proxy=Button(fen1, text="proxy", command=faireApparaitreProxy)
+proxy.pack()
 
 print (saisie)
 fen1.mainloop()
