@@ -17,30 +17,6 @@ from tkinter import Toplevel
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
 
-
-"""
-rep=tk.messagebox.askyesno(title="Proxy", message="Avez vous un proxy?")
-
-if (rep==1):
-    fen2 = Tk()
-    fen2.title("Proxy")
-    entree2 = Entry(fen2)#demande la valeur
-    ok = Button(fen2, text = "ok", command = fen2.destroy)
-    ok.pack()
-    entree2.pack() # integration du widget a la fenetre principale
-    label=Label(fen2,text="Ex:http://192.168.0.3:3128")
-    label.pack()
-    fen2.mainloop()
-    #create the object, assign it to a variable
-    chaineProxy = entree2.get()
-    #proxy = urllib.request.ProxyHandler({'http': '192.168.0.3:3128'})
-    proxy = urllib.request.ProxyHandler({chaineProxy})
-    # construct a new opener using your proxy settings
-    opener = urllib.request.build_opener(proxy)
-    # install the openen on the module-level
-    urllib.request.install_opener(opener)
-"""
-
 #Le code d'avant doit s'éxécuter sans proxy
 #Le code d 'après s'éxécute avec un proxy si vous en avez un et normalement sinon
 
