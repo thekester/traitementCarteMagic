@@ -122,6 +122,8 @@ fen1 = Tk()
 fen1.title("Magic pour les non programmeurs")
 fen1.geometry("500x250")
 listeCarteAvecNbExemplaires=[]
+labelCarte = tk.Label(fen1, text = "Tapez le nom de la carte en dessous")
+labelCarte.pack()
 entree = Entry(fen1)#demande la valeur
 entree.pack() # integration du widget a la fenetre principale
 labelChoixFormatImage=tk.Label(fen1, text = "Choix du format de l'image")
