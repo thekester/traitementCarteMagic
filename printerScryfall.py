@@ -27,10 +27,10 @@ from tkinter.messagebox import askyesno
 os.chdir("traitementCarteMagic/images")
 
 
-def creerDoc():
+def creer_doc():
     print("Hello")
 
-def GetMagicCardImage(searchterm):
+def get_magic_card_image(searchterm):
     #ne pas oublier les time.sleep afin de ne pas surcharger scryfall
     #print("Hello")
     #print(os.path)
@@ -39,11 +39,11 @@ def GetMagicCardImage(searchterm):
         card = scrython.cards.Named(fuzzy=searchterm)
         time.sleep(1)
         print(card.image_uris())
-        formatVar = listeComboFormat.get()
-        print("Format choisi"+formatVar)
-        card2 = card.image_uris(0,formatVar) #index ?
+        format_var = liste_combo_format.get()
+        print("Format choisi"+format_var)
+        card2 = card.image_uris(0,format_var) #index ?
         time.sleep(1)
-        if(formatVar=="png"):
+        if(format_var=="png"):
             urllib.request.urlretrieve(card2,searchterm+".png")
             time.sleep(1)
         else:
@@ -56,13 +56,13 @@ def GetMagicCardImage(searchterm):
     print("T'as fini youpi")
     return searchterm
 
-def getFormat(event):
-    formatVar = listeComboFormat.get()
-    return formatVar
+def get_format(event):
+    format_var = liste_combo_format.get()
+    return format_var
 
-def getNbExemplaires(event):
+def get_nb_exemplaires(event):
 	# Obtenir l'élément sélectionné
-    select = listeCombo.get()
+    select = liste_combo.get()
     print("Vous avez sélectionné : '", select,"'")
 
 def saisie():
@@ -71,12 +71,12 @@ def saisie():
         sys.exit("La carte qui a aucun nom n'existe pas") #Il faudra voir pour afficher un message d'erruer en rouge
     else:
         #GetMagicCardImage(searchterm).show()
-        imageSouhait=GetMagicCardImage(searchterm)
-        listeCarteAvecNbExemplaires.append(listeCombo.get())
-        listeCarteAvecNbExemplaires.append(imageSouhait)
-    return imageSouhait #recupére la valeur saisie
+        image_souhait=get_magic_card_image(searchterm)
+        liste_carte_avec_nb_exemplaires.append(liste_combo.get())
+        liste_carte_avec_nb_exemplaires.append(image_souhait)
+    return image_souhait #recupére la valeur saisie
 
-def faireApparaitreProxy():
+def faire_apparaitre_proxy():
     top=Toplevel(fen1)
     label=Label(top,text="Ex:192.168.0.3:3128")
     label.pack()
@@ -85,9 +85,9 @@ def faireApparaitreProxy():
     ok = Button(top, text = "ok", command = top.destroy)
     ok.pack()
     #create the object, assign it to a variable
-    chaineProxy = entree2.get()
+    chaine_proxy = entree2.get()
     #proxy = urllib.request.ProxyHandler({'http': '192.168.0.3:3128'})
-    proxy = urllib.request.ProxyHandler({'http': chaineProxy})
+    proxy = urllib.request.ProxyHandler({'http': chaine_proxy})
     # construct a new opener using your proxy settings
     opener = urllib.request.build_opener(proxy)
     # install the openen on the module-level
@@ -97,31 +97,31 @@ def faireApparaitreProxy():
 fen1 = Tk()
 fen1.title("Magic pour les non programmeurs")
 fen1.geometry("500x250")
-listeCarteAvecNbExemplaires=[]
-labelCarte = tk.Label(fen1, text = "Tapez le nom de la carte en dessous")
-labelCarte.pack()
+liste_carte_avec_nb_exemplaires=[]
+label_carte = tk.Label(fen1, text = "Tapez le nom de la carte en dessous")
+label_carte.pack()
 entree = Entry(fen1)#demande la valeur
 entree.pack() # integration du widget a la fenetre principale
-labelChoixFormatImage=tk.Label(fen1, text = "Choix du format de l'image")
-labelChoixFormatImage.pack()
-listeFormats=["art_crop","border_crop","large","normal","png","small"]
-listeComboFormat = ttk.Combobox(fen1, values=listeFormats)
-listeComboFormat.pack()
-listeComboFormat.bind("<<ComboboxSelected>>", getFormat)
+label_choix_format_image=tk.Label(fen1, text = "Choix du format de l'image")
+label_choix_format_image.pack()
+liste_formats=["art_crop","border_crop","large","normal","png","small"]
+liste_combo_format = ttk.Combobox(fen1, values=liste_formats)
+liste_combo_format.pack()
+liste_combo_format.bind("<<ComboboxSelected>>", get_format)
 
 
-labelChoixNbExemplaire = tk.Label(fen1, text = "Nb Exemplaires")
-labelChoixNbExemplaire.pack()
+label_choix_nb_exemplaire = tk.Label(fen1, text = "Nb Exemplaires")
+label_choix_nb_exemplaire.pack()
 
 
 
-listeNbExemplaire=[1, 2,3,4,5,6,7] #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
+liste_nb_exemplaire=[1, 2,3,4,5,6,7] #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
 
-listeCombo = ttk.Combobox(fen1, values=listeNbExemplaire)
-listeCombo.current(0)
-listeCombo.pack()
+liste_combo = ttk.Combobox(fen1, values=liste_nb_exemplaire)
+liste_combo.current(0)
+liste_combo.pack()
 
-listeCombo.bind("<<ComboboxSelected>>", getNbExemplaires)
+liste_combo.bind("<<ComboboxSelected>>", get_nb_exemplaires)
  
 valider = Button(fen1, text = 'valider', command = saisie)
 valider.pack()
@@ -132,7 +132,7 @@ valider.pack()
 quitter = Button(fen1, text = "quitter", command = fen1.destroy)
 quitter.pack()
 
-proxy=Button(fen1, text="proxy", command=faireApparaitreProxy)
+proxy=Button(fen1, text="proxy", command=faire_apparaitre_proxy)
 proxy.pack()
 
 print (saisie)
