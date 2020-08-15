@@ -41,8 +41,6 @@ if (rep==1):
     urllib.request.install_opener(opener)
 """
 
-
-
 #Le code d'avant doit s'éxécuter sans proxy
 #Le code d 'après s'éxécute avec un proxy si vous en avez un et normalement sinon
 
@@ -64,10 +62,17 @@ def GetMagicCardImage(searchterm):
         time.sleep(1)
         card = scrython.cards.Named(fuzzy=searchterm)
         time.sleep(1)
-        card2 = card.image_uris(0,"png") #index ?
+        print(card.image_uris())
+        formatVar = listeComboFormat.get()
+        print("Format choisi"+formatVar)
+        card2 = card.image_uris(0,formatVar) #index ?
         time.sleep(1)
-        urllib.request.urlretrieve(card2,searchterm+".png")
-        time.sleep(1)
+        if(formatVar=="png"):
+            urllib.request.urlretrieve(card2,searchterm+".png")
+            time.sleep(1)
+        else:
+            urllib.request.urlretrieve(card2,searchterm+".jpg")
+            time.sleep(1)
     except Exception:
         print('not found')
         searchterm=""
@@ -75,7 +80,9 @@ def GetMagicCardImage(searchterm):
     print("T'as fini youpi")
     return searchterm
 
-
+def getFormat(event):
+    formatVar = listeComboFormat.get()
+    return formatVar
 
 def getNbExemplaires(event):
 	# Obtenir l'élément sélectionné
@@ -109,7 +116,6 @@ def faireApparaitreProxy():
     opener = urllib.request.build_opener(proxy)
     # install the openen on the module-level
     urllib.request.install_opener(opener)
-    
 
 
 fen1 = Tk()
@@ -118,8 +124,18 @@ fen1.geometry("500x250")
 listeCarteAvecNbExemplaires=[]
 entree = Entry(fen1)#demande la valeur
 entree.pack() # integration du widget a la fenetre principale
+labelChoixFormatImage=tk.Label(fen1, text = "Choix du format de l'image")
+labelChoixFormatImage.pack()
+listeFormats=["art_crop","border_crop","large","normal","png","small"]
+listeComboFormat = ttk.Combobox(fen1, values=listeFormats)
+listeComboFormat.pack()
+listeComboFormat.bind("<<ComboboxSelected>>", getFormat)
+
+
 labelChoixNbExemplaire = tk.Label(fen1, text = "Nb Exemplaires")
 labelChoixNbExemplaire.pack()
+
+
 
 listeNbExemplaire=[1, 2,3,4,5,6,7] #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
 
