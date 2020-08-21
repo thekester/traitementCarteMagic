@@ -6,6 +6,8 @@ import scrython
 import time
 import urllib.request
 card = scrython.cards.Named(fuzzy="Black Lotus")
+
+print(card.id())
 card2 = card.image_uris(0,"png") #index ?
 print(card.image_uris(0,"art_crop"))
 

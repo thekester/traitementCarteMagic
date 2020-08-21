@@ -115,8 +115,7 @@ label_choix_nb_exemplaire.pack()
 
 
 
-liste_nb_exemplaire=[1, 2,3,4,5,6,7] #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
-
+liste_nb_exemplaire=("1", "2","3","4","5","6","7") #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
 liste_combo = ttk.Combobox(fen1, values=liste_nb_exemplaire)
 liste_combo.current(0)
 liste_combo.pack()
