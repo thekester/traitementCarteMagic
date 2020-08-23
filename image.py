@@ -9,7 +9,8 @@ from PIL import Image
 from PIL import ImageDraw
 """ https://www.blitzresults.com/fr/pixels/ """
 
-os.chdir("traitementCarteMagic/images")
+police = ImageFont.truetype("font/TimesNewRoman.ttf", 50)
+os.chdir("images")
 
 img1 = Image.open('Anax, Hardened in the Forge.png')
 img2 = Image.open('Crash Through.png')
@@ -21,8 +22,7 @@ img7 = Image.open('Runaway Steam-Kin .png')
 img8 = Image.open('Scorch Spitte.png')
 img9 = Image.open('Torch Courier.png')
 
-police = ImageFont.truetype("/home/theophile/dev/traitementImagesMagic/traitementCarteMagic/font/TimesNewRoman.ttf", 50)
-os.chdir("/home/theophile/dev/traitementImagesMagic/traitementCarteMagic/images")
+#police = ImageFont.truetype("/home/theophile/dev/traitementImagesMagic/font/TimesNewRoman.ttf", 50)
 
 #feuille de 2235*3120 si carte toute collé
 #Il faut rajouter des marges de 128 px

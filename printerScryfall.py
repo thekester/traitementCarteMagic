@@ -33,27 +33,8 @@ from tkinter.messagebox import askyesno
 # make a request
 
 #print(os.listdir())
-os.chdir("traitementCarteMagic/images")
+os.chdir("images")
 
-"""
-import cv2
-import numpy as np
-
-img = cv2.imread('Anax, Hardened in the Forge.png')
-res = cv2.resize(img, dsize=(226, 302), interpolation=cv2.INTER_CUBIC)
-"""
-
-
-#mywidth = 226
-"""
-mywidth = 226
-
-img = Image.open('Anax, Hardened in the Forge.png')
-wpercent = (mywidth/float(img.size[0]))
-hsize = int((float(img.size[1])*float(wpercent)))
-img = img.resize((mywidth,hsize), PIL.Image.LANCZOS)
-img.save('antialias.png')
-"""
 
 new_size = (226,315)
 
@@ -62,31 +43,6 @@ img = img.resize(new_size, PIL.Image.ANTIALIAS)
 
 img.save('test1.png', optimize=True, quality=100 , dpi=(300,300))
 
-"""
-def set_image_dpi(image):
-    
-    #Rescaling image to 300dpi without resizing
-    #:param image: An image
-    #:return: A rescaled image
-    image_resize = image
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
-    temp_filename = temp_file.name
-    image_resize.save(temp_filename, dpi=(300, 300))
-    return temp_filename
-"""
-
-
-"""Tester  avec chaque fonctionnalité de PIL.Image avec les bonnes dimensions """
-
-
-"""
-image = Image.open('Anax, Hardened in the Forge.png')
-format = image.format
-new_size = (226, 226)
-image.thumbnail(new_size, Image.ANTIALIAS)
-image.save('resized_image.png')
-
-"""
 def creer_doc():
     print("Hello")
 
