@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-.
-
+import copy
 import os
 import time
 import scrython
@@ -15,6 +15,7 @@ from tkinter import Entry
 from tkinter import Button
 from tkinter import Label
 from tkinter import Toplevel
+from tkinter import Scrollbar
 from PIL import Image
 
 from tkinter.filedialog import askopenfilename
@@ -92,6 +93,11 @@ def saisie():
         liste_carte_avec_nb_exemplaires.append(image_souhait)
     return image_souhait #recupére la valeur saisie
 
+def funcImport():
+    print("")
+    
+    
+
 def faire_apparaitre_proxy():
     top=Toplevel(fen1)
     label=Label(top,text="Ex:192.168.0.3:3128")
@@ -109,46 +115,87 @@ def faire_apparaitre_proxy():
     # install the openen on the module-level
     urllib.request.install_opener(opener)
 
+"""
+class MyClass:
+    def method(self, arg):
+        print(arg)
+
+my_object = MyClass()
+my_other_object.method("foo")  
+"""
+"""
+class MyClass:
+    def defilGest(L):
+        
+        op, deCombien = L[0], L[1]
+        if op == 'scroll':
+            units = L[2]
+            box.xview_scroll(deCombien, units)
+        elif op == 'moveto':
+            box.xview_moveto(deCombien)
+
+"""
 
 fen1 = Tk()
+spam = fen1.clipboard_get()
 fen1.title("Magic pour les non programmeurs")
-fen1.geometry("500x250")
+fen1.geometry("500x300")
 liste_carte_avec_nb_exemplaires=[]
+labelVide = tk.Label(fen1, text = "                                ")
+labelVide.grid(row=0,column=0)
 label_carte = tk.Label(fen1, text = "Tapez le nom de la carte en dessous")
-label_carte.pack()
+label_carte.grid(row=0,column=1)
 entree = Entry(fen1)#demande la valeur
-entree.pack() # integration du widget a la fenetre principale
+entree.grid(row=1,column=1) # integration du widget a la fenetre principale
 label_choix_format_image=tk.Label(fen1, text = "Choix du format de l'image")
-label_choix_format_image.pack()
+label_choix_format_image.grid(row=2,column=1)
 liste_formats=["art_crop","border_crop","large","normal","png","small"]
 liste_combo_format = ttk.Combobox(fen1, values=liste_formats)
-liste_combo_format.pack()
+liste_combo_format.grid(row=3,column=1)
 liste_combo_format.bind("<<ComboboxSelected>>", get_format)
 
 
 label_choix_nb_exemplaire = tk.Label(fen1, text = "Nb Exemplaires")
-label_choix_nb_exemplaire.pack()
+label_choix_nb_exemplaire.grid(row=4,column=1)
 
 
 
 liste_nb_exemplaire=("1", "2","3","4","5","6","7") #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
 liste_combo = ttk.Combobox(fen1, values=liste_nb_exemplaire)
 liste_combo.current(0)
-liste_combo.pack()
+liste_combo.grid(row=5,column=1)
 
 liste_combo.bind("<<ComboboxSelected>>", get_nb_exemplaires)
  
 valider = Button(fen1, text = 'valider', command = saisie)
-valider.pack()
+valider.grid(row=6,column=1)
 
 #creerDoc = Button(fen1, text = 'Créer le document', command = creerDoc)
 #creerDoc.pack()
 
+buttonImport = Button(fen1, text = 'Import', command = funcImport)
+buttonImport.grid(row=7,column=1)
+
+
+deckList = tk.StringVar()
+deckList.set(spam)
+
+box = Entry(fen1, textvariable = deckList)
+box.grid(row=8, column=1 ,   sticky='ew')
+"""
+saisiDefil = Scrollbar(fen1, orient='horizontal',
+    command=defilGest)
+saisiDefil.grid(row=9, sticky='ew')
+
+box['xscrollcommand'] = saisiDefil.set
+"""
+
+
 quitter = Button(fen1, text = "quitter", command = fen1.destroy)
-quitter.pack()
+quitter.grid(row=10,column=1)
 
 proxy=Button(fen1, text="proxy", command=faire_apparaitre_proxy)
-proxy.pack()
+proxy.grid(row=11,column=1)
 
 print (saisie)
 fen1.mainloop()
