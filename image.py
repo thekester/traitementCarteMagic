@@ -10,6 +10,7 @@ from PIL import ImageDraw
 """ https://www.blitzresults.com/fr/pixels/ """
 
 police = ImageFont.truetype("font/TimesNewRoman.ttf", 50)
+policeProxy = ImageFont.truetype("font/TimesNewRoman.ttf", 25)
 os.chdir("images")
 
 img1 = Image.open('Anax, Hardened in the Forge.png')
@@ -21,8 +22,6 @@ img6 = Image.open('Light Up the Stage.png')
 img7 = Image.open('Runaway Steam-Kin .png')
 img8 = Image.open('Scorch Spitte.png')
 img9 = Image.open('Torch Courier.png')
-
-#police = ImageFont.truetype("/home/theophile/dev/traitementImagesMagic/font/TimesNewRoman.ttf", 50)
 
 #feuille de 2235*3120 si carte toute collé
 #Il faut rajouter des marges de 128 px
@@ -44,6 +43,9 @@ def creerImagePage(listImage):
     page = Image.new("RGB",size,(255,255,255))
     for y in range(3):
         for x in range(3):
+            eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
+            chaineProxy="Proxy not for Sale"
+            eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
             page.paste(listImage[3*y+x],(boxl*x,boxh*y))
     draw = ImageDraw.Draw(page)
     margeReelle=6.27/4
