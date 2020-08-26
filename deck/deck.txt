@@ -1,0 +1,31 @@
+4 Fabled Passage (M21) 246
+4 Island (M21) 265
+4 Zagoth Triome (IKO) 259
+4 Overgrown Tomb (GRN) 253
+4 Breeding Pool (RNA) 246
+4 Watery Grave (GRN) 259
+2 Forest (M21) 274
+1 Castle Vantress (ELD) 242
+1 Castle Locthwain (ELD) 241
+1 Swamp (M21) 268
+4 Narset, Parter of Veils (WAR) 61
+2 Nissa, Who Shakes the World (WAR) 169
+4 Shark Typhoon (IKO) 67
+4 Agonizing Remorse (THB) 83
+1 Cultivate (M21) 177
+1 Casualties of War (WAR) 187
+3 Aether Gust (M20) 42
+2 Eliminate (M21) 97
+2 Mystical Dispute (ELD) 58
+1 Negate (RIX) 44
+4 Uro, Titan of Nature's Wrath (THB) 229
+2 Hydroid Krasis (RNA) 183
+1 Brazen Borrower (ELD) 39
+
+3 Heartless Act (IKO) 91
+3 Extinction Event (IKO) 88
+2 Cry of the Carnarium (RNA) 70
+2 Elder Gargaroth (M21) 179
+1 Lochmere Serpent (ELD) 195
+2 Eliminate (M21) 97
+2 Negate (RIX) 44

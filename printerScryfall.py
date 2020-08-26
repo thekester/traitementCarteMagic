@@ -3,6 +3,7 @@
 import copy
 import os
 import time
+import tkinter
 import scrython
 import sys
 import tkinter as tk
@@ -20,6 +21,8 @@ from PIL import Image
 
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
+
+#https://forums.commentcamarche.net/forum/affich-3053256-python-limiter-un-entry
 
 """ https://vonkrafft.fr/console/redimensionner-images-python/"""
 
@@ -49,8 +52,6 @@ def creer_doc():
 
 def get_magic_card_image(searchterm):
     #ne pas oublier les time.sleep afin de ne pas surcharger scryfall
-    #print("Hello")
-    #print(os.path)
     try:
         time.sleep(1)
         card = scrython.cards.Named(fuzzy=searchterm)
@@ -94,10 +95,15 @@ def saisie():
     return image_souhait #recupére la valeur saisie
 
 def funcImport():
-    print("")
+    print(os.listdir()) #On est dans image
+    os.chdir("../deck/")
+    print(os.listdir()) #On est dans deck
+    importDeckList = box.get()
+    with open("deck.txt", "w") as deck:
+	    deck.write(importDeckList) #On met la decklist au format mtga dans le fichier.txt
+    deck.close() #On ferme le fichier
     
     
-
 def faire_apparaitre_proxy():
     top=Toplevel(fen1)
     label=Label(top,text="Ex:192.168.0.3:3128")
@@ -135,6 +141,14 @@ class MyClass:
             box.xview_moveto(deCombien)
 
 """
+
+
+
+
+
+
+
+
 
 fen1 = Tk()
 spam = fen1.clipboard_get()
@@ -182,13 +196,9 @@ deckList.set(spam)
 
 box = Entry(fen1, textvariable = deckList)
 box.grid(row=8, column=1 ,   sticky='ew')
-"""
-saisiDefil = Scrollbar(fen1, orient='horizontal',
-    command=defilGest)
-saisiDefil.grid(row=9, sticky='ew')
 
-box['xscrollcommand'] = saisiDefil.set
-"""
+scroll_y = tk.Scrollbar(box, orient="vertical")
+scroll_y.pack(side="right", expand=True, fill="y")
 
 
 quitter = Button(fen1, text = "quitter", command = fen1.destroy)
