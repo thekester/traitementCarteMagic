@@ -9,6 +9,7 @@ import sys
 import tkinter as tk
 import urllib.request
 import PIL
+import json
 import tempfile
 from tkinter import Tk
 from tkinter import ttk
@@ -35,6 +36,11 @@ from tkinter.messagebox import askyesno
 
 
 # make a request
+
+tableauAvecToutesLesLignes=[]
+listeNbCartesDansDecklist=[]
+listePositionExtensionDansDecklist=[]
+
 
 #print(os.listdir())
 os.chdir("images")
@@ -94,15 +100,69 @@ def saisie():
         liste_carte_avec_nb_exemplaires.append(image_souhait)
     return image_souhait #recupére la valeur saisie
 
+
 def funcImport():
     print(os.listdir()) #On est dans image
     os.chdir("../deck/")
     print(os.listdir()) #On est dans deck
     importDeckList = box.get()
     with open("deck.txt", "w") as deck:
-	    deck.write(importDeckList) #On met la decklist au format mtga dans le fichier.txt
-    deck.close() #On ferme le fichier
+	    deck.write(importDeckList) #On met la decklist au format mtga dans le deck.txt
+    deck = open("deck.txt", "r")
+    lines = deck.readlines()
     
+    for line in lines:
+        if not line.isspace(): #Pour ne pas metre de lignes vides
+            tableauAvecToutesLesLignes.append(line.split(" "))
+    deck.close() #On ferme le fichier
+    #Maintenant on a tout ce qu'il nous faut
+    print(tableauAvecToutesLesLignes)
+    """
+  [['4', 'Fabled', 'Passage', '(M21)', '246\n'], ['4', 'Island', '(M21)', '265\n'], ['4', 'Zagoth', 'Triome', '(IKO)', '259\n'], ['4', 'Overgrown', 'Tomb', '(GRN)', '253\n'], ['4', 'Breeding', 'Pool', '(RNA)', '246\n'], ['4', 'Watery', 'Grave', '(GRN)', '259\n'], ['2', 'Forest', '(M21)', '274\n'], ['1', 'Castle', 'Vantress', '(ELD)', '242\n'], ['1', 'Castle', 'Locthwain', '(ELD)', '241\n'], ['1', 'Swamp', '(M21)', '268\n'], ['4', 'Narset,', 'Parter', 'of', 'Veils', '(WAR)', '61\n'], ['2', 'Nissa,', 'Who', 'Shakes', 'the', 'World', '(WAR)', '169\n'], ['4', 'Shark', 'Typhoon', '(IKO)', '67\n'], ['4', 'Agonizing', 'Remorse', '(THB)', '83\n'], ['1', 'Cultivate', '(M21)', '177\n'], ['1', 'Casualties', 'of', 'War', '(WAR)', '187\n'], ['3', 'Aether', 'Gust', '(M20)', '42\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Mystical', 'Dispute', '(ELD)', '58\n'], ['1', 'Negate', '(RIX)', '44\n'], ['4', 'Uro,', 'Titan', 'of', "Nature's", 'Wrath', '(THB)', '229\n'], ['2', 'Hydroid', 'Krasis', '(RNA)', '183\n'], ['1', 'Brazen', 'Borrower', '(ELD)', '39\n'], ['3', 'Heartless', 'Act', '(IKO)', '91\n'], ['3', 'Extinction', 'Event', '(IKO)', '88\n'], ['2', 'Cry', 'of', 'the', 'Carnarium', '(RNA)', '70\n'], ['2', 'Elder', 'Gargaroth', '(M21)', '179\n'], ['1', 'Lochmere', 'Serpent', '(ELD)', '195\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Negate', '(RIX)', '44']]
+    """
+    print(tableauAvecToutesLesLignes[1]) #['4', 'Island', '(M21)', '265\n']
+    print(tableauAvecToutesLesLignes[1][1]) #Island
+    print(len(tableauAvecToutesLesLignes)) #30
+    tableauAvecToutesLesLignes.append("")
+    tailleTableau=len(tableauAvecToutesLesLignes)
+    print(tableauAvecToutesLesLignes[0][0])
+    
+    for i in range(tailleTableau-1):
+        print("On est à la ligne",i)
+        print(tableauAvecToutesLesLignes[0])
+        tableauAvecToutesLesLignes.pop([0][0])
+        #listePositionExtensionDansDecklist.append(tableauAvecToutesLesLignes[i][-1])
+        indiceASupprimer=len(tableauAvecToutesLesLignes[0])
+        print("La taille de la ligne est",len(tableauAvecToutesLesLignes[0]))
+        #tableauAvecToutesLesLignes.pop([i][1])
+    print(tableauAvecToutesLesLignes)
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    """
+    with open('deck.txt') as file, open('deck.json', 'w') as deck_file:
+        items = []
+        for line in file:
+            if not line.strip():
+                continue
+            d = {}
+            data = line.split('|')
+            for val in data:
+                key, sep, value = val.partition(':')
+             d[key.strip()] = value.strip()
+            items.append(d)
+        json.dump(items, deck_file)
+    print("")
+    """
     
 def faire_apparaitre_proxy():
     top=Toplevel(fen1)
