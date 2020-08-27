@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-.
-import copy
 import os
 import time
 import tkinter
@@ -9,9 +8,10 @@ import sys
 import tkinter as tk
 import urllib.request
 import PIL
-import json
-import tempfile
 import re
+from PIL import ImageFont
+from PIL import Image
+from PIL import ImageDraw
 from tkinter import Tk
 from tkinter import ttk
 from tkinter import Entry
@@ -19,12 +19,8 @@ from tkinter import Button
 from tkinter import Label
 from tkinter import Toplevel
 from tkinter import Scrollbar
-from PIL import Image
-
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
-
-
 
 #print (re.search(r"^\d+ ([\w\s]*) ","4 Fabled Passage (M21) 246").group(1)+"fin")
 #Fabled Passagefin
@@ -40,11 +36,14 @@ from tkinter.messagebox import askyesno
 
 # make a request
 
+police = ImageFont.truetype("font/TimesNewRoman.ttf", 50)
+policeProxy = ImageFont.truetype("font/TimesNewRoman.ttf", 25)
 
 listeNbCartesDansDecklist=[]
 listeNomCartesDansDecklist=[]
 listePositionExtensionDansDecklist=[]
 listeExtensionDansDecklist=[]
+listeNomAColler=[]
 
 #print(os.listdir())
 os.chdir("images")
@@ -57,10 +56,32 @@ img = img.resize(new_size, PIL.Image.ANTIALIAS)
 
 img.save('test1.png', optimize=True, quality=100 , dpi=(300,300))
 
-def creer_doc():
+def creerImagePage2(listImage,nomPage):
+    x=0
+    y=0
+    longueur=745
+    hauteur=1040
+    marge= int(longueur /  10)
+    boxl=longueur+marge
+    boxh=hauteur+marge
+    size=((boxl*3)-marge,boxh*3-marge)
+    page = Image.new("RGB",size,(255,255,255))
+    for y in range(3):
+        for x in range(3):
+            eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
+            chaineProxy="Proxy not for Sale"
+            eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
+            page.paste(listImage[3*y+x],(boxl*x,boxh*y))
+    draw = ImageDraw.Draw(page)
+    margeReelle=6.27/4
+    chaine="À imprimer en %d cm * %d cm"  % (int(6.27*3+margeReelle),int(8.67*3+margeReelle))
+    draw.text((boxl+marge, hauteur),chaine,(0,0,0),font=police)
+    page.save(nomPage)
+
+def creerDoc():
     print("Hello")
 
-def get_magic_card_image(searchterm):
+def getMagicCardImage(searchterm):
     #ne pas oublier les time.sleep afin de ne pas surcharger scryfall
     try:
         time.sleep(1)
@@ -99,10 +120,10 @@ def saisie():
         sys.exit("La carte qui a aucun nom n'existe pas") #Il faudra voir pour afficher un message d'erruer en rouge
     else:
         #GetMagicCardImage(searchterm).show()
-        image_souhait=get_magic_card_image(searchterm)
+        imageSouhait=getMagicCardImage(searchterm)
         listeCarteAvecNbExemplaires.append(listeCombo.get())
-        listeCarteAvecNbExemplaires.append(image_souhait)
-    return image_souhait #recupére la valeur saisie
+        listeCarteAvecNbExemplaires.append(imageSouhait)
+    return imageSouhait #recupére la valeur saisie
 
 
 def funcImport():
@@ -124,12 +145,12 @@ def funcImport():
             intermediaire=line.split(" ")
             nbcards=intermediaire[0]
             listeNbCartesDansDecklist.append(nbcards)
-            #print("Il faut",nbcards)
+            print("Il faut",nbcards)
             extension=intermediaire[-2]
-            #print("La carte est dans l'extension",extension)
+            print("La carte est dans l'extension",extension)
             listeExtensionDansDecklist.append(extension)
             position=intermediaire[-1]
-            #print("La position est",position)
+            print("La position est",position)
             listePositionExtensionDansDecklist.append(position)
             nomCarte=re.search(r"^\d+ ([,\w\s]*) ",line)
             #nomCarte=re.match(r"[0-9]+ (.*)\(",line)
@@ -141,9 +162,41 @@ def funcImport():
                 sys.exit("Erreur Carte existe pas")
         else:
             print("")
-        #print("La carte a pour nom",nomCarte)
+        print("La carte a pour nom",nomCarte)
         #tableauAvecToutesLesLignes.append(line.split(" "))
     deck.close() #On ferme le fichier
+    parcour=len(listeNomCartesDansDecklist)
+    nbAvant9=0
+    nombrePage=0
+    for k in range(parcour):
+        nomCarte=listeNomCartesDansDecklist.pop(0)
+        try:
+            time.sleep(1)
+            card = scrython.cards.Named(fuzzy=nomCarte)
+            time.sleep(1)
+            print(card.image_uris())
+            card2 = card.image_uris(0,"png") #index ?
+            time.sleep(1)
+            urllib.request.urlretrieve(card2,nomCarte+".png")
+        except Exception:
+            print('not found')
+            searchterm=""
+            #continue if file not found
+        print("T'as fini youpi")
+        nbCarteAColler=int(listeNbCartesDansDecklist.pop(0))
+        card3=Image.open(nomCarte+".png")
+        for nb in range(nbCarteAColler):
+            listeNomAColler.append(card3)
+            nbAvant9=nbAvant9+1
+            if nbAvant9==9: #On ne peut coller que jusqu'à neuf cartes surune feuille
+                nomPage="page %d .png" % nombrePage
+                print("Le nom de la page est",nomPage)
+                creerImagePage2(listeNomAColler,nomPage)
+                nombrePage=nombrePage+1
+                nbAvant9=0
+                del listeNomAColler[:] #On réinitialise la liste
+
+    #getMagicCardImage(searchterm)
     #Maintenant on a tout ce qu'il nous faut
     #print(tableauAvecToutesLesLignes)
 
