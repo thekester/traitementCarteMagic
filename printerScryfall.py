@@ -25,38 +25,26 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
 
 
-"""
-print (re.search(r"^\d+ ([\w\s]*) ","4 Fabled Passage (M21) 246").group(1)+"fin")
-Fabled Passagefin
 
+#print (re.search(r"^\d+ ([\w\s]*) ","4 Fabled Passage (M21) 246").group(1)+"fin")
+#Fabled Passagefin
 
-
-
-"""
 #https://www.magic-ville.com/fr/decks/showdeck?ref=412707&mt8=1
 
 #https://forums.commentcamarche.net/forum/affich-3053256-python-limiter-un-entry
 
-""" https://vonkrafft.fr/console/redimensionner-images-python/"""
+# https://vonkrafft.fr/console/redimensionner-images-python/ 
 
 #Le code d'avant doit s'éxécuter sans proxy
 #Le code d 'après s'éxécute avec un proxy si vous en avez un et normalement sinon
 
-#pip install cmake
-
-#pip3 install opencv-python
-
-
 # make a request
 
-tableauAvecToutesLesLignes=[]
-tableauAvecToutesLesLignes2=[]
-tableauAvecToutesLesLignes3=[]
-tableauAvecToutesLesLignes4=[]
-listeNbCartesDansDecklist=[]
-listePositionExtensionDansDecklist=[]
-listeSansPositionExtensionDansDecklist=[]
 
+listeNbCartesDansDecklist=[]
+listeNomCartesDansDecklist=[]
+listePositionExtensionDansDecklist=[]
+listeExtensionDansDecklist=[]
 
 #print(os.listdir())
 os.chdir("images")
@@ -79,11 +67,11 @@ def get_magic_card_image(searchterm):
         card = scrython.cards.Named(fuzzy=searchterm)
         time.sleep(1)
         print(card.image_uris())
-        format_var = liste_combo_format.get()
-        print("Format choisi"+format_var)
-        card2 = card.image_uris(0,format_var) #index ?
+        formatVar = listeComboFormat.get()
+        print("Format choisi"+formatVar)
+        card2 = card.image_uris(0,formatVar) #index ?
         time.sleep(1)
-        if(format_var=="png"):
+        if(formatVar=="png"):
             urllib.request.urlretrieve(card2,searchterm+".png")
             time.sleep(1)
         else:
@@ -96,13 +84,13 @@ def get_magic_card_image(searchterm):
     print("T'as fini youpi")
     return searchterm
 
-def get_format(event):
-    format_var = liste_combo_format.get()
-    return format_var
+def getFormat(event):
+    formatVar = listeComboFormat.get()
+    return formatVar
 
-def get_nb_exemplaires(event):
+def getNbExemplaires(event):
 	# Obtenir l'élément sélectionné
-    select = liste_combo.get()
+    select = listeCombo.get()
     print("Vous avez sélectionné : '", select,"'")
 
 def saisie():
@@ -112,8 +100,8 @@ def saisie():
     else:
         #GetMagicCardImage(searchterm).show()
         image_souhait=get_magic_card_image(searchterm)
-        liste_carte_avec_nb_exemplaires.append(liste_combo.get())
-        liste_carte_avec_nb_exemplaires.append(image_souhait)
+        listeCarteAvecNbExemplaires.append(listeCombo.get())
+        listeCarteAvecNbExemplaires.append(image_souhait)
     return image_souhait #recupére la valeur saisie
 
 
@@ -135,29 +123,34 @@ def funcImport():
         if not line.isspace(): #Pour ne pas metre de lignes vides
             intermediaire=line.split(" ")
             nbcards=intermediaire[0]
-            print("Il faut",nbcards)
+            listeNbCartesDansDecklist.append(nbcards)
+            #print("Il faut",nbcards)
             extension=intermediaire[-2]
-            print("La carte est dans l'extension",extension)
+            #print("La carte est dans l'extension",extension)
+            listeExtensionDansDecklist.append(extension)
             position=intermediaire[-1]
-            print("La position est",position)
+            #print("La position est",position)
+            listePositionExtensionDansDecklist.append(position)
             nomCarte=re.search(r"^\d+ ([,\w\s]*) ",line)
             #nomCarte=re.match(r"[0-9]+ (.*)\(",line)
             #nomCarte=re.match(r"\d+ (\b*)\(",line)
             if nomCarte:
                 nomCarte=nomCarte.group(1)
+                listeNomCartesDansDecklist.append(nomCarte)
             else:
                 sys.exit("Erreur Carte existe pas")
         else:
-            print("Erreur")
-        print("La carte a pour nom",nomCarte)
-        tableauAvecToutesLesLignes.append(line.split(" "))
+            print("")
+        #print("La carte a pour nom",nomCarte)
+        #tableauAvecToutesLesLignes.append(line.split(" "))
     deck.close() #On ferme le fichier
     #Maintenant on a tout ce qu'il nous faut
-    print(tableauAvecToutesLesLignes)
+    #print(tableauAvecToutesLesLignes)
+
     """
-  [['4', 'Fabled', 'Passage', '(M21)', '246\n'], ['4', 'Island', '(M21)', '265\n'], ['4', 'Zagoth', 'Triome', '(IKO)', '259\n'], ['4', 'Overgrown', 'Tomb', '(GRN)', '253\n'], ['4', 'Breeding', 'Pool', '(RNA)', '246\n'], ['4', 'Watery', 'Grave', '(GRN)', '259\n'], ['2', 'Forest', '(M21)', '274\n'], ['1', 'Castle', 'Vantress', '(ELD)', '242\n'], ['1', 'Castle', 'Locthwain', '(ELD)', '241\n'], ['1', 'Swamp', '(M21)', '268\n'], ['4', 'Narset,', 'Parter', 'of', 'Veils', '(WAR)', '61\n'], ['2', 'Nissa,', 'Who', 'Shakes', 'the', 'World', '(WAR)', '169\n'], ['4', 'Shark', 'Typhoon', '(IKO)', '67\n'], ['4', 'Agonizing', 'Remorse', '(THB)', '83\n'], ['1', 'Cultivate', '(M21)', '177\n'], ['1', 'Casualties', 'of', 'War', '(WAR)', '187\n'], ['3', 'Aether', 'Gust', '(M20)', '42\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Mystical', 'Dispute', '(ELD)', '58\n'], ['1', 'Negate', '(RIX)', '44\n'], ['4', 'Uro,', 'Titan', 'of', "Nature's", 'Wrath', '(THB)', '229\n'], ['2', 'Hydroid', 'Krasis', '(RNA)', '183\n'], ['1', 'Brazen', 'Borrower', '(ELD)', '39\n'], ['3', 'Heartless', 'Act', '(IKO)', '91\n'], ['3', 'Extinction', 'Event', '(IKO)', '88\n'], ['2', 'Cry', 'of', 'the', 'Carnarium', '(RNA)', '70\n'], ['2', 'Elder', 'Gargaroth', '(M21)', '179\n'], ['1', 'Lochmere', 'Serpent', '(ELD)', '195\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Negate', '(RIX)', '44']]
-    """
-    """
+[['4', 'Fabled', 'Passage', '(M21)', '246\n'], ['4', 'Island', '(M21)', '265\n'], ['4', 'Zagoth', 'Triome', '(IKO)', '259\n'], ['4', 'Overgrown', 'Tomb', '(GRN)', '253\n'], ['4', 'Breeding', 'Pool', '(RNA)', '246\n'], ['4', 'Watery', 'Grave', '(GRN)', '259\n'], ['2', 'Forest', '(M21)', '274\n'], ['1', 'Castle', 'Vantress', '(ELD)', '242\n'], ['1', 'Castle', 'Locthwain', '(ELD)', '241\n'], ['1', 'Swamp', '(M21)', '268\n'], ['4', 'Narset,', 'Parter', 'of', 'Veils', '(WAR)', '61\n'], ['2', 'Nissa,', 'Who', 'Shakes', 'the', 'World', '(WAR)', '169\n'], ['4', 'Shark', 'Typhoon', '(IKO)', '67\n'], ['4', 'Agonizing', 'Remorse', '(THB)', '83\n'], ['1', 'Cultivate', '(M21)', '177\n'], ['1', 'Casualties', 'of', 'War', '(WAR)', '187\n'], ['3', 'Aether', 'Gust', '(M20)', '42\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Mystical', 'Dispute', '(ELD)', '58\n'], ['1', 'Negate', '(RIX)', '44\n'], ['4', 'Uro,', 'Titan', 'of', "Nature's", 'Wrath', '(THB)', '229\n'], ['2', 'Hydroid', 'Krasis', '(RNA)', '183\n'], ['1', 'Brazen', 'Borrower', '(ELD)', '39\n'], ['3', 'Heartless', 'Act', '(IKO)', '91\n'], ['3', 'Extinction', 'Event', '(IKO)', '88\n'], ['2', 'Cry', 'of', 'the', 'Carnarium', '(RNA)', '70\n'], ['2', 'Elder', 'Gargaroth', '(M21)', '179\n'], ['1', 'Lochmere', 'Serpent', '(ELD)', '195\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Negate', '(RIX)', '44']]
+"""
+"""
     print(tableauAvecToutesLesLignes[1]) #['4', 'Island', '(M21)', '265\n']
     print(tableauAvecToutesLesLignes[1][1]) #Island
     print(len(tableauAvecToutesLesLignes)) #30
@@ -178,50 +171,10 @@ def funcImport():
     print(tableauAvecToutesLesLignes) #ON obtient un tableau vide
     print(listePositionExtensionDansDecklist)
     print(tableauAvecToutesLesLignes2)
-    
-    #Maintenant on va mettre dans un tableau le nombre de cartes
-    
-    
-    #Maintenant on va mettre l'extension dans un tableau
-    
-    #Maintenant on va pouvoir sortir le nom de la care en prenant ce qu'il y a dans la liste et qui n'est pas présent dans les autres listes
-    
-    #On fait un truc modulo 9 pour coller les images
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    """
-    """
-    with open('deck.txt') as file, open('deck.json', 'w') as deck_file:
-        items = []
-        for line in file:
-            if not line.strip():
-                continue
-            d = {}
-            data = line.split('|')
-            for val in data:
-                key, sep, value = val.partition(':')
-             d[key.strip()] = value.strip()
-            items.append(d)
-        json.dump(items, deck_file)
-    print("")
-    """
-    
-def faire_apparaitre_proxy():
+
+"""
+
+def faireApparaitreProxy():
     top=Toplevel(fen1)
     label=Label(top,text="Ex:192.168.0.3:3128")
     label.pack()
@@ -271,32 +224,32 @@ fen1 = Tk()
 spam = fen1.clipboard_get()
 fen1.title("Magic pour les non programmeurs")
 fen1.geometry("500x300")
-liste_carte_avec_nb_exemplaires=[]
+listeCarteAvecNbExemplaires=[]
 labelVide = tk.Label(fen1, text = "                                ")
 labelVide.grid(row=0,column=0)
-label_carte = tk.Label(fen1, text = "Tapez le nom de la carte en dessous")
-label_carte.grid(row=0,column=1)
+labelCarte = tk.Label(fen1, text = "Tapez le nom de la carte en dessous")
+labelCarte.grid(row=0,column=1)
 entree = Entry(fen1)#demande la valeur
 entree.grid(row=1,column=1) # integration du widget a la fenetre principale
-label_choix_format_image=tk.Label(fen1, text = "Choix du format de l'image")
-label_choix_format_image.grid(row=2,column=1)
-liste_formats=["art_crop","border_crop","large","normal","png","small"]
-liste_combo_format = ttk.Combobox(fen1, values=liste_formats)
-liste_combo_format.grid(row=3,column=1)
-liste_combo_format.bind("<<ComboboxSelected>>", get_format)
+labelChoixFormatImage=tk.Label(fen1, text = "Choix du format de l'image")
+labelChoixFormatImage.grid(row=2,column=1)
+listeFormats=["art_crop","border_crop","large","normal","png","small"]
+listeComboFormat = ttk.Combobox(fen1, values=listeFormats)
+listeComboFormat.grid(row=3,column=1)
+listeComboFormat.bind("<<ComboboxSelected>>", getFormat)
 
 
-label_choix_nb_exemplaire = tk.Label(fen1, text = "Nb Exemplaires")
-label_choix_nb_exemplaire.grid(row=4,column=1)
+labelChoixNbExemplaire = tk.Label(fen1, text = "Nb Exemplaires")
+labelChoixNbExemplaire.grid(row=4,column=1)
 
 
 
-liste_nb_exemplaire=("1", "2","3","4","5","6","7") #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
-liste_combo = ttk.Combobox(fen1, values=liste_nb_exemplaire)
-liste_combo.current(0)
-liste_combo.grid(row=5,column=1)
+listeNbExemplaire=("1", "2","3","4","5","6","7") #On va jusqu'à sept à cause des sept nains mais avec les pétitionnaires tenaces faut voir 
+listeCombo = ttk.Combobox(fen1, values=listeNbExemplaire)
+listeCombo.current(0)
+listeCombo.grid(row=5,column=1)
 
-liste_combo.bind("<<ComboboxSelected>>", get_nb_exemplaires)
+listeCombo.bind("<<ComboboxSelected>>", getNbExemplaires)
  
 valider = Button(fen1, text = 'valider', command = saisie)
 valider.grid(row=6,column=1)
@@ -314,14 +267,14 @@ deckList.set(spam)
 box = Entry(fen1, textvariable = deckList)
 box.grid(row=8, column=1 ,   sticky='ew')
 
-scroll_y = tk.Scrollbar(box, orient="vertical")
-scroll_y.pack(side="right", expand=True, fill="y")
+scrollY = tk.Scrollbar(box, orient="vertical")
+scrollY.pack(side="right", expand=True, fill="y")
 
 
 quitter = Button(fen1, text = "quitter", command = fen1.destroy)
 quitter.grid(row=10,column=1)
 
-proxy=Button(fen1, text="proxy", command=faire_apparaitre_proxy)
+proxy=Button(fen1, text="proxy", command=faireApparaitreProxy)
 proxy.grid(row=11,column=1)
 
 print (saisie)
