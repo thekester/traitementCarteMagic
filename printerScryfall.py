@@ -44,6 +44,7 @@ listeNomCartesDansDecklist=[]
 listePositionExtensionDansDecklist=[]
 listeExtensionDansDecklist=[]
 listeNomAColler=[]
+listeAvecTousLesNomsEncore=[]
 
 #print(os.listdir())
 os.chdir("images")
@@ -55,6 +56,12 @@ img = Image.open('Anax, Hardened in the Forge.png')
 img = img.resize(new_size, PIL.Image.ANTIALIAS)
 
 img.save('test1.png', optimize=True, quality=100 , dpi=(300,300))
+
+def somme(liste):
+    _somme = 0
+    for i in liste:
+        _somme = _somme + int(i)
+    return _somme
 
 def creerImagePage2(listImage,nomPage):
     x=0
@@ -158,6 +165,7 @@ def funcImport():
             if nomCarte:
                 nomCarte=nomCarte.group(1)
                 listeNomCartesDansDecklist.append(nomCarte)
+                listeAvecTousLesNomsEncore.append(nomCarte)
             else:
                 sys.exit("Erreur Carte existe pas")
         else:
@@ -168,6 +176,9 @@ def funcImport():
     parcour=len(listeNomCartesDansDecklist)
     nbAvant9=0
     nombrePage=0
+    nbCarteMise=0
+    print(listeNbCartesDansDecklist)
+    totalCartes=somme(listeNbCartesDansDecklist)
     for k in range(parcour):
         nomCarte=listeNomCartesDansDecklist.pop(0)
         try:
@@ -188,17 +199,70 @@ def funcImport():
         for nb in range(nbCarteAColler):
             listeNomAColler.append(card3)
             nbAvant9=nbAvant9+1
-            if nbAvant9==9: #On ne peut coller que jusqu'à neuf cartes surune feuille
+            nbCarteMise=nbCarteMise+1
+            if nbAvant9==9: #On ne peut coller que jusqu'à neuf cartes sur une feuille
                 nomPage="page %d .png" % nombrePage
                 print("Le nom de la page est",nomPage)
                 creerImagePage2(listeNomAColler,nomPage)
                 nombrePage=nombrePage+1
                 nbAvant9=0
                 del listeNomAColler[:] #On réinitialise la liste
-
-    #getMagicCardImage(searchterm)
-    #Maintenant on a tout ce qu'il nous faut
-    #print(tableauAvecToutesLesLignes)
+            #Il ne faut pas oublier de coller ce qui reste car les decks ne sont pas modulo 9
+            #On n'arrive pas à entrer dans le if suivant
+            print(nbCarteMise)
+            print(totalCartes)
+            if nbCarteMise==totalCartes:#La condition
+                tailleRestanteAParcourir=len(listeNomAColler)
+                nomPage="page %d .png" % nombrePage
+                imagePasEncoreColler=0
+                x2=0
+                y2=0
+                longueur2=745
+                hauteur2=1040
+                marge2= int(longueur2 /  10)
+                boxl2=longueur2+marge2
+                boxh2=hauteur2+marge2
+                size2=((boxl2*3)-marge2,boxh2*3-marge2)
+                page2 = Image.new("RGB",size2,(255,255,255))
+                chaineProxy2="Proxy not for Sale"
+                for resteAParcourir in range (tailleRestanteAParcourir):
+                    imageSpec=listeNomAColler.pop(0)
+                    eachImageDraw2 = ImageDraw.Draw(imageSpec)
+                    eachImageDraw2.text((marge2+200, hauteur2-marge2+40),chaineProxy2,(255,255,255),font=policeProxy)
+                    page2.paste(imageSpec,(boxl2*x2,boxh2*y2))
+                    imagePasEncoreColler=imagePasEncoreColler+1
+                if imagePasEncoreColler == 1:
+                    x2=1
+                    y2=0
+                if imagePasEncoreColler == 2:
+                    x2=2
+                    y2=0
+                if imagePasEncoreColler == 3:
+                    x2=0
+                    y2=1
+                if imagePasEncoreColler == 4:
+                    x2=1
+                    y2=1
+                if imagePasEncoreColler == 5:
+                    x2=2
+                    y2=1
+                if imagePasEncoreColler == 6:
+                    x2=0
+                    y2=2
+                if imagePasEncoreColler == 7:
+                    x2=1
+                    y2=2
+                if imagePasEncoreColler == 8:
+                    x2=2
+                    y2=2
+                draw2 = ImageDraw.Draw(page2)
+                margeReelle=6.27/4
+                chaine="À imprimer en %d cm * %d cm"  % (int(6.27*3+margeReelle),int(8.67*3+margeReelle))
+                draw2.text((boxl2+marge2, hauteur2),chaine,(0,0,0),font=police)
+                page2.save(nomPage)
+                #creerImagePage2(listeNomAColler,nomPage) #IndexError: list index out of range car on va jusqu'à 9
+    print("On a tous le deck maintenant")
+    #Il faut aussi penser à virer les images pour ne garder que les pages
 
     """
 [['4', 'Fabled', 'Passage', '(M21)', '246\n'], ['4', 'Island', '(M21)', '265\n'], ['4', 'Zagoth', 'Triome', '(IKO)', '259\n'], ['4', 'Overgrown', 'Tomb', '(GRN)', '253\n'], ['4', 'Breeding', 'Pool', '(RNA)', '246\n'], ['4', 'Watery', 'Grave', '(GRN)', '259\n'], ['2', 'Forest', '(M21)', '274\n'], ['1', 'Castle', 'Vantress', '(ELD)', '242\n'], ['1', 'Castle', 'Locthwain', '(ELD)', '241\n'], ['1', 'Swamp', '(M21)', '268\n'], ['4', 'Narset,', 'Parter', 'of', 'Veils', '(WAR)', '61\n'], ['2', 'Nissa,', 'Who', 'Shakes', 'the', 'World', '(WAR)', '169\n'], ['4', 'Shark', 'Typhoon', '(IKO)', '67\n'], ['4', 'Agonizing', 'Remorse', '(THB)', '83\n'], ['1', 'Cultivate', '(M21)', '177\n'], ['1', 'Casualties', 'of', 'War', '(WAR)', '187\n'], ['3', 'Aether', 'Gust', '(M20)', '42\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Mystical', 'Dispute', '(ELD)', '58\n'], ['1', 'Negate', '(RIX)', '44\n'], ['4', 'Uro,', 'Titan', 'of', "Nature's", 'Wrath', '(THB)', '229\n'], ['2', 'Hydroid', 'Krasis', '(RNA)', '183\n'], ['1', 'Brazen', 'Borrower', '(ELD)', '39\n'], ['3', 'Heartless', 'Act', '(IKO)', '91\n'], ['3', 'Extinction', 'Event', '(IKO)', '88\n'], ['2', 'Cry', 'of', 'the', 'Carnarium', '(RNA)', '70\n'], ['2', 'Elder', 'Gargaroth', '(M21)', '179\n'], ['1', 'Lochmere', 'Serpent', '(ELD)', '195\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Negate', '(RIX)', '44']]
