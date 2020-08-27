@@ -11,6 +11,7 @@ import urllib.request
 import PIL
 import json
 import tempfile
+import re
 from tkinter import Tk
 from tkinter import ttk
 from tkinter import Entry
@@ -22,6 +23,17 @@ from PIL import Image
 
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
+
+
+"""
+print (re.search(r"^\d+ ([\w\s]*) ","4 Fabled Passage (M21) 246").group(1)+"fin")
+Fabled Passagefin
+
+
+
+
+"""
+#https://www.magic-ville.com/fr/decks/showdeck?ref=412707&mt8=1
 
 #https://forums.commentcamarche.net/forum/affich-3053256-python-limiter-un-entry
 
@@ -38,8 +50,12 @@ from tkinter.messagebox import askyesno
 # make a request
 
 tableauAvecToutesLesLignes=[]
+tableauAvecToutesLesLignes2=[]
+tableauAvecToutesLesLignes3=[]
+tableauAvecToutesLesLignes4=[]
 listeNbCartesDansDecklist=[]
 listePositionExtensionDansDecklist=[]
+listeSansPositionExtensionDansDecklist=[]
 
 
 #print(os.listdir())
@@ -110,15 +126,37 @@ def funcImport():
 	    deck.write(importDeckList) #On met la decklist au format mtga dans le deck.txt
     deck = open("deck.txt", "r")
     lines = deck.readlines()
-    
+    intermediaire=""
+    nbcards=""
+    extension=""
+    position=""
+    nomCarte=""
     for line in lines:
         if not line.isspace(): #Pour ne pas metre de lignes vides
-            tableauAvecToutesLesLignes.append(line.split(" "))
+            intermediaire=line.split(" ")
+            nbcards=intermediaire[0]
+            print("Il faut",nbcards)
+            extension=intermediaire[-2]
+            print("La carte est dans l'extension",extension)
+            position=intermediaire[-1]
+            print("La position est",position)
+            nomCarte=re.search(r"^\d+ ([,\w\s]*) ",line)
+            #nomCarte=re.match(r"[0-9]+ (.*)\(",line)
+            #nomCarte=re.match(r"\d+ (\b*)\(",line)
+            if nomCarte:
+                nomCarte=nomCarte.group(1)
+            else:
+                sys.exit("Erreur Carte existe pas")
+        else:
+            print("Erreur")
+        print("La carte a pour nom",nomCarte)
+        tableauAvecToutesLesLignes.append(line.split(" "))
     deck.close() #On ferme le fichier
     #Maintenant on a tout ce qu'il nous faut
     print(tableauAvecToutesLesLignes)
     """
   [['4', 'Fabled', 'Passage', '(M21)', '246\n'], ['4', 'Island', '(M21)', '265\n'], ['4', 'Zagoth', 'Triome', '(IKO)', '259\n'], ['4', 'Overgrown', 'Tomb', '(GRN)', '253\n'], ['4', 'Breeding', 'Pool', '(RNA)', '246\n'], ['4', 'Watery', 'Grave', '(GRN)', '259\n'], ['2', 'Forest', '(M21)', '274\n'], ['1', 'Castle', 'Vantress', '(ELD)', '242\n'], ['1', 'Castle', 'Locthwain', '(ELD)', '241\n'], ['1', 'Swamp', '(M21)', '268\n'], ['4', 'Narset,', 'Parter', 'of', 'Veils', '(WAR)', '61\n'], ['2', 'Nissa,', 'Who', 'Shakes', 'the', 'World', '(WAR)', '169\n'], ['4', 'Shark', 'Typhoon', '(IKO)', '67\n'], ['4', 'Agonizing', 'Remorse', '(THB)', '83\n'], ['1', 'Cultivate', '(M21)', '177\n'], ['1', 'Casualties', 'of', 'War', '(WAR)', '187\n'], ['3', 'Aether', 'Gust', '(M20)', '42\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Mystical', 'Dispute', '(ELD)', '58\n'], ['1', 'Negate', '(RIX)', '44\n'], ['4', 'Uro,', 'Titan', 'of', "Nature's", 'Wrath', '(THB)', '229\n'], ['2', 'Hydroid', 'Krasis', '(RNA)', '183\n'], ['1', 'Brazen', 'Borrower', '(ELD)', '39\n'], ['3', 'Heartless', 'Act', '(IKO)', '91\n'], ['3', 'Extinction', 'Event', '(IKO)', '88\n'], ['2', 'Cry', 'of', 'the', 'Carnarium', '(RNA)', '70\n'], ['2', 'Elder', 'Gargaroth', '(M21)', '179\n'], ['1', 'Lochmere', 'Serpent', '(ELD)', '195\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Negate', '(RIX)', '44']]
+    """
     """
     print(tableauAvecToutesLesLignes[1]) #['4', 'Island', '(M21)', '265\n']
     print(tableauAvecToutesLesLignes[1][1]) #Island
@@ -126,28 +164,47 @@ def funcImport():
     tableauAvecToutesLesLignes.append("")
     tailleTableau=len(tableauAvecToutesLesLignes)
     print(tableauAvecToutesLesLignes[0][0])
-    
     for i in range(tailleTableau-1):
         print("On est à la ligne",i)
         print(tableauAvecToutesLesLignes[0])
-        tableauAvecToutesLesLignes.pop([0][0])
+        print("Dernier élément",tableauAvecToutesLesLignes[0][-1])
+        listePositionExtensionDansDecklist.append(tableauAvecToutesLesLignes[0][-1])
+        tableauAvecToutesLesLignes2.append(tableauAvecToutesLesLignes[0])
+        tableauAvecToutesLesLignes.pop([0][-1])
         #listePositionExtensionDansDecklist.append(tableauAvecToutesLesLignes[i][-1])
         indiceASupprimer=len(tableauAvecToutesLesLignes[0])
         print("La taille de la ligne est",len(tableauAvecToutesLesLignes[0]))
         #tableauAvecToutesLesLignes.pop([i][1])
-    print(tableauAvecToutesLesLignes)
+    print(tableauAvecToutesLesLignes) #ON obtient un tableau vide
+    print(listePositionExtensionDansDecklist)
+    print(tableauAvecToutesLesLignes2)
     
-
-    
-    
-    
-    
+    #Maintenant on va mettre dans un tableau le nombre de cartes
     
     
+    #Maintenant on va mettre l'extension dans un tableau
+    
+    #Maintenant on va pouvoir sortir le nom de la care en prenant ce qu'il y a dans la liste et qui n'est pas présent dans les autres listes
+    
+    #On fait un truc modulo 9 pour coller les images
     
     
     
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    """
     """
     with open('deck.txt') as file, open('deck.json', 'w') as deck_file:
         items = []
