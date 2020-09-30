@@ -166,10 +166,7 @@ def funcImport():
             position=intermediaire[-1]
             print("La position est",position)
             listePositionExtensionDansDecklist.append(position)
-            #regex = r"[0-9] [a-zA-Z\s\S]* [(]"
-            nomCarte=re.search(r"^\d+ ([,\-\w\s]*) ",line)
-            #nomCarte=re.search(r"[0-9] [a-zA-Z\s\S]* [(] ",line)
-            #tenter de corriger les problèmes d'accents
+            nomCarte=re.search(r"^\d+ ([,\-\'\w\s]*) ",line)
             if nomCarte:
                 nomCarte=nomCarte.group(1)
                 print(nomCarte)
