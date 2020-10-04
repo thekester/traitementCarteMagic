@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 # -*- coding: utf-8 -*-.
 import os
 import time
@@ -22,20 +22,7 @@ from tkinter import Scrollbar
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
 
-
-#print (re.search(r"^\d+ ([\w\s]*) ","4 Fabled Passage (M21) 246").group(1)+"fin")
-#Fabled Passagefin
-
-#https://www.magic-ville.com/fr/decks/showdeck?ref=412707&mt8=1
-
-#https://forums.commentcamarche.net/forum/affich-3053256-python-limiter-un-entry
-
-# https://vonkrafft.fr/console/redimensionner-images-python/ 
-
-#Le code d'avant doit s'éxécuter sans proxy
-#Le code d 'après s'éxécute avec un proxy si vous en avez un et normalement sinon
-
-# make a request
+#Les cartes avec aventure sont considétés comme des cartes doubles
 
 police = ImageFont.truetype("font/TimesNewRoman.ttf", 50)
 policeProxy = ImageFont.truetype("font/TimesNewRoman.ttf", 25)
@@ -50,14 +37,6 @@ listeAvecTousLesNomsEncore=[]
 #print(os.listdir())
 os.chdir("images")
 
-"""
-new_size = (226,315)
-
-img = Image.open('Anax, Hardened in the Forge.png')
-img = img.resize(new_size, PIL.Image.ANTIALIAS)
-
-img.save('test1.png', optimize=True, quality=100 , dpi=(300,300))
-"""
 
 def purge(dir, pattern):
     for f in os.listdir(dir):
@@ -172,22 +151,27 @@ def funcImport():
                 print(nomCarte)
                 listeNomCartesDansDecklist.append(nomCarte)
                 listeAvecTousLesNomsEncore.append(nomCarte)
+                
                 try:
                     carteDouble = scrython.cards.Named(fuzzy=nomCarte)
-                    carteDoubleFaceTab= carteDouble.card_faces()
-                    if len(carteDoubleFaceTab) >1:
-                        carteDoubleFace = str(carteDoubleFaceTab[1])
-                        listeNbCartesDansDecklist.append(nbcards)
-                        listeExtensionDansDecklist.append(extension)
-                        listePositionExtensionDansDecklist.append(position)
-                        nomCarteFaceDouble = re.search(r"'name': '[\w\s]*'",carteDoubleFace)
-                        nomCarteFaceDouble=str(nomCarteFaceDouble)
-                        left="name': '"
-                        right="\'\">"
-                        nomCarteFaceDouble=nomCarteFaceDouble[nomCarteFaceDouble.index(left)+len(left):nomCarteFaceDouble.index(right)]
-                        listeNomCartesDansDecklist.append(nomCarteFaceDouble)
-                        listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
-                        print("La carte double a comme nom",nomCarteFaceDouble)
+                    aventure=str(carteDouble)
+                    if "Instant — Adventure" in aventure: #Attention les cartes avec aventure = cartes doubles et ont 'type_line': 'Instant — Adventure'
+                        print("")
+                    else:
+                        carteDoubleFaceTab= carteDouble.card_faces()
+                        if len(carteDoubleFaceTab) >1:
+                            carteDoubleFace = str(carteDoubleFaceTab[1])
+                            listeNbCartesDansDecklist.append(nbcards)
+                            listeExtensionDansDecklist.append(extension)
+                            listePositionExtensionDansDecklist.append(position)
+                            nomCarteFaceDouble = re.search(r"'name': '[\w\s]*'",carteDoubleFace)
+                            nomCarteFaceDouble=str(nomCarteFaceDouble)
+                            left="name': '"
+                            right="\'\">"
+                            nomCarteFaceDouble=nomCarteFaceDouble[nomCarteFaceDouble.index(left)+len(left):nomCarteFaceDouble.index(right)]
+                            listeNomCartesDansDecklist.append(nomCarteFaceDouble)
+                            listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
+                            print("La carte double a comme nom",nomCarteFaceDouble)
                 except:
                     print("")
             else:
@@ -226,13 +210,24 @@ def funcImport():
                     right2="', 'large"
                     lienCarteFaceDouble2=lienCarteFaceDouble2[lienCarteFaceDouble2.index(left2)+len(left2):lienCarteFaceDouble2.index(right2)]
                     print(lienCarteFaceDouble2)
-                    #la première carte a pour face 0
-                    #la deuxième carte à pour face 1
-                    #IL fuat trouver le lien de l'image
-                    #puis en faire un urllib.request.urlretrieve(card2,nomCarte+".png")
                     time.sleep(1)
                     urllib.request.urlretrieve(lienCarteFaceDouble2,nomCarte+".png")
-                    print("")
+                    #Il faut mettre l'autre face aussi
+                    """
+                    chaine3=str(carteDoubleFaceTab[1])
+                    print(chaine3)
+                    lienCarteFaceDouble3 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine3).group() #Il fuat faire des groupes car il y a des limites
+                    print(lienCarteFaceDouble3)
+                    nomCarteFaceDouble3=str(lienCarteFaceDouble3)
+                    print(nomCarteFaceDouble3)
+                    left3="normal': '"
+                    right3="', 'large"
+                    lienCarteFaceDouble3=lienCarteFaceDouble3[lienCarteFaceDouble3.index(left3)+len(left3):lienCarteFaceDouble3.index(right3)]
+                    print(lienCarteFaceDouble3)
+                    time.sleep(1)
+                    urllib.request.urlretrieve(lienCarteFaceDouble3,nomCarte+".png")   
+                    """                 
+
             except:
                 print(card.image_uris())
                 card2 = card.image_uris(0,"png") #index ?
@@ -316,32 +311,6 @@ def funcImport():
     #Il faut aussi penser à virer les images pour ne garder que les pages
     #https://stackoverflow.com/questions/1548704/delete-multiple-files-matching-a-pattern
 
-    """
-[['4', 'Fabled', 'Passage', '(M21)', '246\n'], ['4', 'Island', '(M21)', '265\n'], ['4', 'Zagoth', 'Triome', '(IKO)', '259\n'], ['4', 'Overgrown', 'Tomb', '(GRN)', '253\n'], ['4', 'Breeding', 'Pool', '(RNA)', '246\n'], ['4', 'Watery', 'Grave', '(GRN)', '259\n'], ['2', 'Forest', '(M21)', '274\n'], ['1', 'Castle', 'Vantress', '(ELD)', '242\n'], ['1', 'Castle', 'Locthwain', '(ELD)', '241\n'], ['1', 'Swamp', '(M21)', '268\n'], ['4', 'Narset,', 'Parter', 'of', 'Veils', '(WAR)', '61\n'], ['2', 'Nissa,', 'Who', 'Shakes', 'the', 'World', '(WAR)', '169\n'], ['4', 'Shark', 'Typhoon', '(IKO)', '67\n'], ['4', 'Agonizing', 'Remorse', '(THB)', '83\n'], ['1', 'Cultivate', '(M21)', '177\n'], ['1', 'Casualties', 'of', 'War', '(WAR)', '187\n'], ['3', 'Aether', 'Gust', '(M20)', '42\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Mystical', 'Dispute', '(ELD)', '58\n'], ['1', 'Negate', '(RIX)', '44\n'], ['4', 'Uro,', 'Titan', 'of', "Nature's", 'Wrath', '(THB)', '229\n'], ['2', 'Hydroid', 'Krasis', '(RNA)', '183\n'], ['1', 'Brazen', 'Borrower', '(ELD)', '39\n'], ['3', 'Heartless', 'Act', '(IKO)', '91\n'], ['3', 'Extinction', 'Event', '(IKO)', '88\n'], ['2', 'Cry', 'of', 'the', 'Carnarium', '(RNA)', '70\n'], ['2', 'Elder', 'Gargaroth', '(M21)', '179\n'], ['1', 'Lochmere', 'Serpent', '(ELD)', '195\n'], ['2', 'Eliminate', '(M21)', '97\n'], ['2', 'Negate', '(RIX)', '44']]
-"""
-"""
-    print(tableauAvecToutesLesLignes[1]) #['4', 'Island', '(M21)', '265\n']
-    print(tableauAvecToutesLesLignes[1][1]) #Island
-    print(len(tableauAvecToutesLesLignes)) #30
-    tableauAvecToutesLesLignes.append("")
-    tailleTableau=len(tableauAvecToutesLesLignes)
-    print(tableauAvecToutesLesLignes[0][0])
-    for i in range(tailleTableau-1):
-        print("On est à la ligne",i)
-        print(tableauAvecToutesLesLignes[0])
-        print("Dernier élément",tableauAvecToutesLesLignes[0][-1])
-        listePositionExtensionDansDecklist.append(tableauAvecToutesLesLignes[0][-1])
-        tableauAvecToutesLesLignes2.append(tableauAvecToutesLesLignes[0])
-        tableauAvecToutesLesLignes.pop([0][-1])
-        #listePositionExtensionDansDecklist.append(tableauAvecToutesLesLignes[i][-1])
-        indiceASupprimer=len(tableauAvecToutesLesLignes[0])
-        print("La taille de la ligne est",len(tableauAvecToutesLesLignes[0]))
-        #tableauAvecToutesLesLignes.pop([i][1])
-    print(tableauAvecToutesLesLignes) #ON obtient un tableau vide
-    print(listePositionExtensionDansDecklist)
-    print(tableauAvecToutesLesLignes2)
-
-"""
 
 def faireApparaitreProxy():
     top=Toplevel(fen1)
@@ -359,35 +328,6 @@ def faireApparaitreProxy():
     opener = urllib.request.build_opener(proxy)
     # install the openen on the module-level
     urllib.request.install_opener(opener)
-
-"""
-class MyClass:
-    def method(self, arg):
-        print(arg)
-
-my_object = MyClass()
-my_other_object.method("foo")  
-"""
-"""
-class MyClass:
-    def defilGest(L):
-        
-        op, deCombien = L[0], L[1]
-        if op == 'scroll':
-            units = L[2]
-            box.xview_scroll(deCombien, units)
-        elif op == 'moveto':
-            box.xview_moveto(deCombien)
-
-"""
-
-
-
-
-
-
-
-
 
 fen1 = Tk()
 try:
@@ -451,3 +391,5 @@ proxy.grid(row=11,column=1)
 
 print (saisie)
 fen1.mainloop()
+
+
