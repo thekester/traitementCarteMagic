@@ -155,7 +155,7 @@ def funcImport():
                 try:
                     carteDouble = scrython.cards.Named(fuzzy=nomCarte)
                     aventure=str(carteDouble)
-                    if "Instant — Adventure" in aventure: #Attention les cartes avec aventure = cartes doubles et ont 'type_line': 'Instant — Adventure'
+                    if "Instant — Adventure" or "Sorcery — Adventure" in aventure: #Attention les cartes avec aventure = cartes doubles et ont 'type_line':
                         print("")
                     else:
                         carteDoubleFaceTab= carteDouble.card_faces()
@@ -391,5 +391,4 @@ proxy.grid(row=11,column=1)
 
 print (saisie)
 fen1.mainloop()
-
 
