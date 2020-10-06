@@ -126,13 +126,57 @@ def funcImport():
     importDeckList = box.get() #On prend ce qu'on a mis dans le champ textuel
     with open("deck.txt", "w") as deck: #On écrit dans deck.txt
 	    deck.write(importDeckList) #On met la decklist au format mtga dans le deck.txt
-    deck = open("deck.txt", "r") #On lit deck.txt
+    deck = open("deck.txt", "r+") #On lit deck.txt
     lines = deck.readlines() #On définit les lignes
     intermediaire=""
     nbcards=""
     extension=""
     position=""
     nomCarte=""
+    #Pour régler le problème des cartes doubles
+    #Il y a une solution simple
+    #C'est de rajouter l'autre face dans le deck.txt
+    for line in lines:
+        if not line.isspace(): #Pour ne pas metre de lignes vides
+            intermediaire=line.split(" ")
+            nbcards=intermediaire[0]
+            listeNbCartesDansDecklist.append(nbcards)
+            print("Il faut",nbcards)
+            extension=intermediaire[-2]
+            print("La carte est dans l'extension",extension)
+            listeExtensionDansDecklist.append(extension)
+            position=intermediaire[-1]
+            print("La position est",position)
+            listePositionExtensionDansDecklist.append(position)
+            nomCarte=re.search(r"^\d+ ([,\-\'\w\s]*) ",line)
+            nomCarte=nomCarte.group(1) #On a bien les noms de cartes
+            if nomCarte:
+                try:
+                    carteDouble = scrython.cards.Named(fuzzy=nomCarte)
+                    infoCarteModale=carteDouble.card_faces()
+                    carteModale=str(infoCarteModale[1])
+                    if "\'colors\': []" in carteModale:
+                        carteDoubleFaceTab= carteDouble.card_faces() 
+                        if len(carteDoubleFaceTab) >1:
+                            carteDoubleFace = str(carteDoubleFaceTab[1])
+                            nomCarteFaceDouble = re.search(r"'name': '[\w\s]*'",carteDoubleFace)
+                            nomCarteFaceDouble=str(nomCarteFaceDouble)
+                            left="name': '"
+                            right="\'\">"
+                            nomCarteFaceDouble=nomCarteFaceDouble[nomCarteFaceDouble.index(left)+len(left):nomCarteFaceDouble.index(right)]
+                            strCarteDouble="{0} {1} {2} {3}".format(nbcards,nomCarteFaceDouble,extension,position)
+                            deck.write("\n")
+                            deck.write(strCarteDouble)
+                        else:
+                            print("")
+                    else:
+                        print("")
+                except:
+                    print("")
+    #On intègre nos changements
+    deck.close() #On ferme le deck
+    deck = open("deck.txt", "r") #On lit deck.txt
+    lines = deck.readlines() #On définit les lignes
     for line in lines: #On boucle pour chaque ligne
         if not line.isspace(): #Pour ne pas metre de lignes vides
             intermediaire=line.split(" ")
@@ -155,12 +199,14 @@ def funcImport():
                 try:
                     carteDouble = scrython.cards.Named(fuzzy=nomCarte)
                     aventure=str(carteDouble)
-                    if "Instant — Adventure" or "Sorcery — Adventure" in aventure: #Attention les cartes avec aventure = cartes doubles et ont 'type_line':
-                        print("")
+                    carteDoubleFaceTab= carteDouble.card_faces()
+                    carteDoubleFace = str(carteDoubleFaceTab[0])
+                    if "Instant — Adventure" or "Sorcery — Adventure" in carteDoubleFace: #Attention les cartes avec aventure = cartes doubles et ont 'type_line':
+                        print("Bonjour carte aventure")
                     else:
                         carteDoubleFaceTab= carteDouble.card_faces()
                         if len(carteDoubleFaceTab) >1:
-                            carteDoubleFace = str(carteDoubleFaceTab[1])
+                            carteDoubleFace = str(carteDoubleFaceTab[0])
                             listeNbCartesDansDecklist.append(nbcards)
                             listeExtensionDansDecklist.append(extension)
                             listePositionExtensionDansDecklist.append(position)
@@ -172,6 +218,7 @@ def funcImport():
                             listeNomCartesDansDecklist.append(nomCarteFaceDouble)
                             listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
                             print("La carte double a comme nom",nomCarteFaceDouble)
+                            
                 except:
                     print("")
             else:
@@ -201,7 +248,7 @@ def funcImport():
                 carteDoubleFaceTab= carteDouble.card_faces()
                 if len(carteDoubleFaceTab) >1:
                     chaine2=str(carteDoubleFaceTab[0])
-                    print(chaine2)
+                    print("Info sur la carte",chaine2)
                     lienCarteFaceDouble2 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine2).group() #Il fuat faire des groupes car il y a des limites
                     print(lienCarteFaceDouble2)
                     nomCarteFaceDouble2=str(lienCarteFaceDouble2)
@@ -212,8 +259,21 @@ def funcImport():
                     print(lienCarteFaceDouble2)
                     time.sleep(1)
                     urllib.request.urlretrieve(lienCarteFaceDouble2,nomCarte+".png")
+
+                    carteDoubleFace = str(carteDoubleFaceTab[1])
+                    listeNbCartesDansDecklist.append(nbcards)
+                    listeExtensionDansDecklist.append(extension)
+                    listePositionExtensionDansDecklist.append(position)
+                    nomCarteFaceDouble = re.search(r"'name': '[\w\s]*'",carteDoubleFace)
+                    nomCarteFaceDouble=str(nomCarteFaceDouble)
+                    left="name': '"
+                    right="\'\">"
+                    nomCarteFaceDouble=nomCarteFaceDouble[nomCarteFaceDouble.index(left)+len(left):nomCarteFaceDouble.index(right)]
+                    #listeNomCartesDansDecklist.append(nomCarteFaceDouble)
+                    #listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
+                    print("La carte double a comme nom",nomCarteFaceDouble)                    
+                    
                     #Il faut mettre l'autre face aussi
-                    """
                     chaine3=str(carteDoubleFaceTab[1])
                     print(chaine3)
                     lienCarteFaceDouble3 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine3).group() #Il fuat faire des groupes car il y a des limites
@@ -225,8 +285,7 @@ def funcImport():
                     lienCarteFaceDouble3=lienCarteFaceDouble3[lienCarteFaceDouble3.index(left3)+len(left3):lienCarteFaceDouble3.index(right3)]
                     print(lienCarteFaceDouble3)
                     time.sleep(1)
-                    urllib.request.urlretrieve(lienCarteFaceDouble3,nomCarte+".png")   
-                    """                 
+                    urllib.request.urlretrieve(lienCarteFaceDouble3,nomCarteFaceDouble+".png")
 
             except:
                 print(card.image_uris())
@@ -240,6 +299,8 @@ def funcImport():
             searchterm=""
             #continue if file not found
         print("T'as fini youpi")
+
+
         nbCarteAColler=int(listeNbCartesDansDecklist.pop(0))
         card3=Image.open(nomCarte+".png")
         for nb in range(nbCarteAColler):
