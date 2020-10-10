@@ -140,14 +140,14 @@ def funcImport():
         if not line.isspace(): #Pour ne pas metre de lignes vides
             intermediaire=line.split(" ")
             nbcards=intermediaire[0]
-            listeNbCartesDansDecklist.append(nbcards)
+            #listeNbCartesDansDecklist.append(nbcards)
             print("Il faut",nbcards)
             extension=intermediaire[-2]
             print("La carte est dans l'extension",extension)
-            listeExtensionDansDecklist.append(extension)
+            #listeExtensionDansDecklist.append(extension)
             position=intermediaire[-1]
             print("La position est",position)
-            listePositionExtensionDansDecklist.append(position)
+            #listePositionExtensionDansDecklist.append(position)
             nomCarte=re.search(r"^\d+ ([,\-\'\w\s]*) ",line)
             nomCarte=nomCarte.group(1) #On a bien les noms de cartes
             if nomCarte:
@@ -175,6 +175,7 @@ def funcImport():
                     print("")
     #On intègre nos changements
     deck.close() #On ferme le deck
+    listeNbCartesDansDecklist=[]
     deck = open("deck.txt", "r") #On lit deck.txt
     lines = deck.readlines() #On définit les lignes
     for line in lines: #On boucle pour chaque ligne
@@ -235,6 +236,7 @@ def funcImport():
     nbCarteMise=0
     print(listeNbCartesDansDecklist)
     totalCartes=somme(listeNbCartesDansDecklist)
+    print("IL y a %d de cartes dans la liste",totalCartes)
     for k in range(parcour):
         nomCarte=listeNomCartesDansDecklist.pop(0)
         print("Je prends la carte",nomCarte)
@@ -259,7 +261,6 @@ def funcImport():
                     print(lienCarteFaceDouble2)
                     time.sleep(1)
                     urllib.request.urlretrieve(lienCarteFaceDouble2,nomCarte+".png")
-
                     carteDoubleFace = str(carteDoubleFaceTab[1])
                     listeNbCartesDansDecklist.append(nbcards)
                     listeExtensionDansDecklist.append(extension)
@@ -271,8 +272,7 @@ def funcImport():
                     nomCarteFaceDouble=nomCarteFaceDouble[nomCarteFaceDouble.index(left)+len(left):nomCarteFaceDouble.index(right)]
                     #listeNomCartesDansDecklist.append(nomCarteFaceDouble)
                     #listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
-                    print("La carte double a comme nom",nomCarteFaceDouble)                    
-                    
+                    print("La carte double a comme nom",nomCarteFaceDouble)
                     #Il faut mettre l'autre face aussi
                     chaine3=str(carteDoubleFaceTab[1])
                     print(chaine3)
@@ -307,6 +307,15 @@ def funcImport():
             listeNomAColler.append(card3)
             nbAvant9=nbAvant9+1
             nbCarteMise=nbCarteMise+1
+            print("Jai déjà coller",nb)
+            print("Il faut coller",nbCarteAColler)
+            if(totalCartes==nbCarteMise):
+                if((nbCarteMise % 9)==0):
+                    listeNomAColler.append("../images/Image vide.png")
+                    nbAvant9=nbAvant9+1
+                    nbCarteMise=nbCarteMise+1
+            #C'est là qu'il faut faire des trucs spéciaux pour la dernière page qui n'apparait pas
+            #On peu rajouter des images vides images.imageVide.jpg
             if nbAvant9==9: #On ne peut coller que jusqu'à neuf cartes sur une feuille
                 nomPage="page %d .png" % nombrePage
                 print("Le nom de la page est",nomPage)
@@ -316,7 +325,10 @@ def funcImport():
                 del listeNomAColler[:] #On réinitialise la liste
             #Il ne faut pas oublier de coller ce qui reste car les decks ne sont pas modulo 9
             #On n'arrive pas à entrer dans le if suivant
-            print(nbCarteMise)
+            print("Nombre carteMise",nbCarteMise)
+            #nbCarteMise = 64
+            
+            #Faudra faire un sum() de ce tableau
             print(totalCartes)
             if nbCarteMise==totalCartes:#La condition
                 tailleRestanteAParcourir=len(listeNomAColler)
@@ -333,6 +345,8 @@ def funcImport():
                 page2 = Image.new("RGB",size2,(255,255,255))
                 chaineProxy2="Proxy not for Sale"
                 for resteAParcourir in range (tailleRestanteAParcourir):
+                    print(resteAParcourir)
+                    print("Taille restante à parcourir",tailleRestanteAParcourir)
                     imageSpec=listeNomAColler.pop(0)
                     eachImageDraw2 = ImageDraw.Draw(imageSpec)
                     eachImageDraw2.text((marge2+200, hauteur2-marge2+40),chaineProxy2,(255,255,255),font=policeProxy)
