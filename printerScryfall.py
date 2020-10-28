@@ -67,15 +67,15 @@ def creerImagePage2(listImage,nomPage):
             #Faudrait essayer d'assombrir les images , elles sont trop claires par rapport aux vraies cartes
             try:
                 print("Je commence par prendre",listImage[3*y+x])
-                #imageToDraw=Image.open(listImage[3*y+x])
-                eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
+                imageToDraw=Image.open(listImage[3*y+x])
+                eachImageDraw = ImageDraw.Draw(imageToDraw)
                 print("Image prise",listImage[3*y+x])
                 print("Test Collage",eachImageDraw)
                 print(type(eachImageDraw))
                 chaineProxy="Proxy not for Sale"
                 eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
                 #page.paste(listImage[3*y+x],(boxl*x,boxh*y))
-                page.paste(listImage[3*y+x],(boxl*x,boxh*y))
+                page.paste(imageToDraw,(boxl*x,boxh*y))
             except:
                 print("Erreur",listImage[3*y+x])
                 """eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
