@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-.
 import os
 import time
-import tkinter
+#import tkinter as TK
 import scrython
 import sys
 import tkinter as tk
@@ -21,6 +21,9 @@ from tkinter import Toplevel
 from tkinter import Scrollbar
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askyesno
+import io
+from io import BytesIO
+from unicodedata import name
 
 #Les cartes avec aventure sont considétés comme des cartes doubles
 
@@ -61,10 +64,30 @@ def creerImagePage2(listImage,nomPage):
     page = Image.new("RGB",size,(255,255,255))
     for y in range(3):
         for x in range(3):
-            eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
-            chaineProxy="Proxy not for Sale"
-            eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
-            page.paste(listImage[3*y+x],(boxl*x,boxh*y))
+            #Faudrait essayer d'assombrir les images , elles sont trop claires par rapport aux vraies cartes
+            try:
+                print("Je commence par prendre",listImage[3*y+x])
+                #imageToDraw=Image.open(listImage[3*y+x])
+                eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
+                print("Image prise",listImage[3*y+x])
+                print("Test Collage",eachImageDraw)
+                print(type(eachImageDraw))
+                chaineProxy="Proxy not for Sale"
+                eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
+                #page.paste(listImage[3*y+x],(boxl*x,boxh*y))
+                page.paste(listImage[3*y+x],(boxl*x,boxh*y))
+            except:
+                print("Erreur",listImage[3*y+x])
+                """eachImageDraw = ImageDraw.Draw(listImage[3*y+x])
+                chaineProxy="Proxy not for Sale"
+                eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
+                page.paste(listImage[3*y+x],(boxl*x,boxh*y))"""
+                imageToDraw=Image.open(listImage[3*y+x])
+                eachImageDraw=imageToDraw
+                chaineProxy="Proxy not for Sale"
+                eachImageDraw.text((marge+200, hauteur-marge+40),chaineProxy,(255,255,255),font=policeProxy)
+                #page.paste(listImage[3*y+x],(boxl*x,boxh*y))
+                page.paste(imageToDraw,(boxl*x,boxh*y))
     draw = ImageDraw.Draw(page)
     margeReelle=6.27/4
     chaine="À imprimer en %d cm * %d cm"  % (int(6.27*3+margeReelle),int(8.67*3+margeReelle))
@@ -196,7 +219,6 @@ def funcImport():
                 print(nomCarte)
                 listeNomCartesDansDecklist.append(nomCarte)
                 listeAvecTousLesNomsEncore.append(nomCarte)
-                
                 try:
                     carteDouble = scrython.cards.Named(fuzzy=nomCarte)
                     aventure=str(carteDouble)
@@ -219,7 +241,6 @@ def funcImport():
                             listeNomCartesDansDecklist.append(nomCarteFaceDouble)
                             listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
                             print("La carte double a comme nom",nomCarteFaceDouble)
-                            
                 except:
                     print("")
             else:
@@ -251,7 +272,7 @@ def funcImport():
                 if len(carteDoubleFaceTab) >1:
                     chaine2=str(carteDoubleFaceTab[0])
                     print("Info sur la carte",chaine2)
-                    lienCarteFaceDouble2 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine2).group() #Il fuat faire des groupes car il y a des limites
+                    lienCarteFaceDouble2 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine2).group() #Il faut faire des groupes car il y a des limites
                     print(lienCarteFaceDouble2)
                     nomCarteFaceDouble2=str(lienCarteFaceDouble2)
                     print(nomCarteFaceDouble2)
@@ -260,7 +281,14 @@ def funcImport():
                     lienCarteFaceDouble2=lienCarteFaceDouble2[lienCarteFaceDouble2.index(left2)+len(left2):lienCarteFaceDouble2.index(right2)]
                     print(lienCarteFaceDouble2)
                     time.sleep(1)
-                    urllib.request.urlretrieve(lienCarteFaceDouble2,nomCarte+".png")
+                    try:
+                        urllib.request.urlretrieve(lienCarteFaceDouble2,nomCarte+".png")
+                        Image.open(nomCarte+".png")
+                        #Il faut faire un try et essayer de l'ouvrir sinon l'enregistrer en jpg puis la transformer en png
+                    except:
+                        urllib.request.urlretrieve(lienCarteFaceDouble2,nomCarte+".jpg")
+                        img2=Image.open(nomCarte+".jpg")
+                        img2.save(nomCarte+".png")
                     carteDoubleFace = str(carteDoubleFaceTab[1])
                     listeNbCartesDansDecklist.append(nbcards)
                     listeExtensionDansDecklist.append(extension)
@@ -270,13 +298,11 @@ def funcImport():
                     left="name': '"
                     right="\'\">"
                     nomCarteFaceDouble=nomCarteFaceDouble[nomCarteFaceDouble.index(left)+len(left):nomCarteFaceDouble.index(right)]
-                    #listeNomCartesDansDecklist.append(nomCarteFaceDouble)
-                    #listeAvecTousLesNomsEncore.append(nomCarteFaceDouble)
                     print("La carte double a comme nom",nomCarteFaceDouble)
                     #Il faut mettre l'autre face aussi
                     chaine3=str(carteDoubleFaceTab[1])
                     print(chaine3)
-                    lienCarteFaceDouble3 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine3).group() #Il fuat faire des groupes car il y a des limites
+                    lienCarteFaceDouble3 = re.search(r"'normal': '[\W\S\s\w./-cards/]* 'large'",chaine3).group() #Il faut faire des groupes car il y a des limites
                     print(lienCarteFaceDouble3)
                     nomCarteFaceDouble3=str(lienCarteFaceDouble3)
                     print(nomCarteFaceDouble3)
@@ -285,8 +311,14 @@ def funcImport():
                     lienCarteFaceDouble3=lienCarteFaceDouble3[lienCarteFaceDouble3.index(left3)+len(left3):lienCarteFaceDouble3.index(right3)]
                     print(lienCarteFaceDouble3)
                     time.sleep(1)
-                    urllib.request.urlretrieve(lienCarteFaceDouble3,nomCarteFaceDouble+".png")
-
+                    try:
+                        urllib.request.urlretrieve(lienCarteFaceDouble3,nomCarteFaceDouble+".png")
+                        Image.open(nomCarte+".png")
+                        #Il faut faire un try et essayer de l'ouvrir sinon l'enregistrer en jpg puis la transformer en png
+                    except:
+                        urllib.request.urlretrieve(lienCarteFaceDouble3,nomCarte+".jpg")
+                        img3=Image.open(nomCarte+".jpg")
+                        img3.save(nomCarte+".png")
             except:
                 print(card.image_uris())
                 card2 = card.image_uris(0,"png") #index ?
@@ -303,19 +335,43 @@ def funcImport():
 
         nbCarteAColler=int(listeNbCartesDansDecklist.pop(0))
         card3=Image.open(nomCarte+".png")
+        """
+        img = Image.open(BytesIO(card3.content))
+        img2 = img.crop((1,20,50,80))
+        b = BytesIO()
+        img2.save(b,format="png")
+        img3 = Image.open(b)
+        print("Test conversion",type(img3))
+        ima=Image.open(nomCarte+".png")
+        with BytesIO() as f:
+            ima.save(f, format='PNG')
+            f.seek(0)
+            ima_jpg = Image.open(f)
+            print("Test conversion",type(ima_jpg))
+        card4=card3.convert('RGB')
+        card4.save(nomCarte+".png")
+        card3=card4"""
+        buffer = io.BytesIO()
+        card3.save(buffer, format='PNG')
+        card3.save(nomCarte+".png")
+        if(".png" in nomCarte)==0:
+            nomCarte=nomCarte.replace(".jpg",".png")
+            card3=nomCarte+".png"
+        # You probably want
+        desiredObject = buffer.getbuffer()
         for nb in range(nbCarteAColler):
             listeNomAColler.append(card3)
             nbAvant9=nbAvant9+1
             nbCarteMise=nbCarteMise+1
             print("Jai déjà coller",nb)
             print("Il faut coller",nbCarteAColler)
-            if(totalCartes==nbCarteMise):
-                if((nbCarteMise % 9)==0):
-                    listeNomAColler.append("../images/Image vide.png")
+            print("La carte à coller s'appelle",card3)
+            if(totalCartes==nbCarteMise and nbCarteMise%9==0):
+                    listeNomAColler.append("../images/imageVide.png")
                     nbAvant9=nbAvant9+1
+                    print("Il reste avant la fin pour image vide",nbAvant9)
                     nbCarteMise=nbCarteMise+1
             #C'est là qu'il faut faire des trucs spéciaux pour la dernière page qui n'apparait pas
-            #On peu rajouter des images vides images.imageVide.jpg
             if nbAvant9==9: #On ne peut coller que jusqu'à neuf cartes sur une feuille
                 nomPage="page %d .png" % nombrePage
                 print("Le nom de la page est",nomPage)
@@ -327,7 +383,6 @@ def funcImport():
             #On n'arrive pas à entrer dans le if suivant
             print("Nombre carteMise",nbCarteMise)
             #nbCarteMise = 64
-            
             #Faudra faire un sum() de ce tableau
             print(totalCartes)
             if nbCarteMise==totalCartes:#La condition
@@ -348,34 +403,37 @@ def funcImport():
                     print(resteAParcourir)
                     print("Taille restante à parcourir",tailleRestanteAParcourir)
                     imageSpec=listeNomAColler.pop(0)
+                    print("Image prise dans la liste",imageSpec)
+                    imageSpec=Image.open(imageSpec)
+                    print("Image réelle prise",imageSpec)
                     eachImageDraw2 = ImageDraw.Draw(imageSpec)
                     eachImageDraw2.text((marge2+200, hauteur2-marge2+40),chaineProxy2,(255,255,255),font=policeProxy)
                     page2.paste(imageSpec,(boxl2*x2,boxh2*y2))
                     imagePasEncoreColler=imagePasEncoreColler+1
-                if imagePasEncoreColler == 1:
-                    x2=1
-                    y2=0
-                if imagePasEncoreColler == 2:
-                    x2=2
-                    y2=0
-                if imagePasEncoreColler == 3:
-                    x2=0
-                    y2=1
-                if imagePasEncoreColler == 4:
-                    x2=1
-                    y2=1
-                if imagePasEncoreColler == 5:
-                    x2=2
-                    y2=1
-                if imagePasEncoreColler == 6:
-                    x2=0
-                    y2=2
-                if imagePasEncoreColler == 7:
-                    x2=1
-                    y2=2
-                if imagePasEncoreColler == 8:
-                    x2=2
-                    y2=2
+                    if imagePasEncoreColler == 1:
+                        x2=1
+                        y2=0
+                    if imagePasEncoreColler == 2:
+                        x2=2
+                        y2=0
+                    if imagePasEncoreColler == 3:
+                        x2=0
+                        y2=1
+                    if imagePasEncoreColler == 4:
+                        x2=1
+                        y2=1
+                    if imagePasEncoreColler == 5:
+                        x2=2
+                        y2=1
+                    if imagePasEncoreColler == 6:
+                        x2=0
+                        y2=2
+                    if imagePasEncoreColler == 7:
+                        x2=1
+                        y2=2
+                    if imagePasEncoreColler == 8:
+                        x2=2
+                        y2=2
                 draw2 = ImageDraw.Draw(page2)
                 margeReelle=6.27/4
                 chaine="À imprimer en %d cm * %d cm"  % (int(6.27*3+margeReelle),int(8.67*3+margeReelle))
@@ -389,7 +447,7 @@ def funcImport():
 
 def faireApparaitreProxy():
     top=Toplevel(fen1)
-    label=Label(top,text="Ex:192.168.0.3:3128")
+    label=Label(top,text="Ex:192.168.0.13:3128")
     label.pack()
     entree2 = Entry(top)#demande la valeur
     entree2.pack() # integration du widget a la fenetre principale
